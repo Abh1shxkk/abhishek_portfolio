@@ -3,8 +3,14 @@ import { SectionId } from '../types';
 import { useEducation } from '../hooks/usePortfolio';
 
 // Map institution names to logo paths
-function getInstitutionLogo(institution: string): string {
+function getInstitutionLogo(institution: string, dataLogo?: string | null): string {
+  // Use logo from data if available
+  if (dataLogo) return dataLogo;
+
   const lower = institution.toLowerCase();
+  if (lower.includes('iimt')) {
+    return '/download.png';
+  }
   if (lower.includes('meerut institute') || lower.includes('miet')) {
     return '/miet.png';
   }
@@ -110,7 +116,7 @@ export const Education: React.FC = () => {
 
           <div className="space-y-6">
             {education.map((edu, index) => {
-              const logo = getInstitutionLogo(edu.institution);
+              const logo = getInstitutionLogo(edu.institution, edu.logo);
               const isVisible = visibleCards.has(index);
               const duration = getDuration(edu.start_date, edu.end_date);
 
@@ -118,15 +124,14 @@ export const Education: React.FC = () => {
                 <div
                   key={edu.id}
                   ref={el => { cardRefs.current[index] = el; }}
-                  className={`relative transition-all duration-700 ease-out ${
-                    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                  }`}
+                  className={`relative transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    }`}
                   style={{ transitionDelay: `${index * 150}ms` }}
                 >
                   {/* Timeline dot */}
                   <div className="hidden md:flex absolute left-0 top-8 z-10">
                     <div className="w-3 h-3 bg-black dark:bg-white ring-4 ring-neutral-50 dark:ring-[#111]"
-                         style={{ marginLeft: '23px' }} />
+                      style={{ marginLeft: '23px' }} />
                   </div>
 
                   {/* Card */}
