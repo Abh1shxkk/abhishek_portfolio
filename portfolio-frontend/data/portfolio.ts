@@ -17,6 +17,7 @@ export const PROFILE_DATA: Profile = {
   twitter_url: 'https://x.com/abh1shxkk',
   website_url: null,
   years_of_experience: 1,
+  experience_label: '7 months',
   availability_status: 'available',
 };
 
@@ -31,6 +32,7 @@ export const EXPERIENCE_DATA: Experience[] = [
     start_date: '2025-06-01',
     end_date: null,
     is_current: true,
+    duration_label: '7 months',
     description: 'Building and maintaining dynamic full-stack applications using Laravel, PHP, JavaScript, and WordPress. Delivered key projects including a job-seeking platform (Skills360), a personalized matchmaking app (DelWell), and an immigration services website (Kairo Global). Focused on performance optimization, responsive UI, real-time features, and SEO-friendly development to enhance overall user experience.',
     responsibilities: [],
     technologies: ['Laravel', 'JavaScript', 'Tailwind CSS', 'REACT', 'Next.js'],

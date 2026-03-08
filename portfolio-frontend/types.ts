@@ -16,6 +16,7 @@ export interface Profile {
   twitter_url: string | null;
   website_url: string | null;
   years_of_experience: number | null;
+  experience_label?: string | null;
   availability_status: 'available' | 'busy' | 'not_available';
 }
 
@@ -28,6 +29,7 @@ export interface Experience {
   start_date: string;
   end_date: string | null;
   is_current: boolean;
+  duration_label?: string | null;
   description: string | null;
   responsibilities: string[] | null;
   technologies: string[] | null;

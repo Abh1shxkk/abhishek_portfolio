@@ -7,9 +7,7 @@ import {
   SKILLS_GROUPED,
 } from '../data/portfolio';
 
-// Fallback key for production builds where env injection may not work
-// This is a client-side key (always visible in browser JS), so hardcoding is acceptable
-const API_KEY = process.env.API_KEY || process.env.GEMINI_API_KEY || 'AIzaSyDT-aHThMfo4GjxyT594cBwxV-9LNe5fpw';
+const API_KEY = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
 
 
 let aiClient: GoogleGenAI | null = null;
@@ -50,7 +48,7 @@ Professional Links:
 
 About ${profile.full_name}:
 ${profile.bio || profile.summary || ''}
-⏱️ ${profile.years_of_experience || 'N/A'} years of experience
+⏱️ ${profile.experience_label || (profile.years_of_experience ? `${profile.years_of_experience}+ years` : 'N/A')} of experience
 
 Technical Skills:
 ${skillsText}

@@ -7,6 +7,9 @@ const ROTATING_WORDS = ['Developer', 'Engineer'];
 
 export const Hero: React.FC = () => {
   const { data: profile, isLoading } = useProfile();
+
+  const experienceLabel = profile?.experience_label?.trim()
+    || (profile?.years_of_experience ? `${profile.years_of_experience}+ years` : '0 years');
   const [isVisible, setIsVisible] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [rotatingIndex, setRotatingIndex] = useState(0);
@@ -162,10 +165,10 @@ export const Hero: React.FC = () => {
                   </svg>
                 </div>
                 <div className="flex items-center gap-3 mt-1 flex-wrap">
-                  {!isLoading && profile?.years_of_experience && (
+                  {!isLoading && experienceLabel && (
                     <span className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-500 font-mono">
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                      {profile.years_of_experience}+ yrs exp
+                      {experienceLabel}
                     </span>
                   )}
                   {!isLoading && profile?.location && (
@@ -350,7 +353,7 @@ export const Hero: React.FC = () => {
                   </div>
                   <div className="text-neutral-400 dark:text-neutral-600">
                     <span className="text-neutral-300 dark:text-neutral-700 select-none mr-4">05</span>
-                    {'  '}<span className="text-neutral-600 dark:text-neutral-400">experience</span>: <span className="text-amber-600 dark:text-amber-400">{profile?.years_of_experience || '0'}+</span> <span className="text-neutral-400 dark:text-neutral-600">years</span>,
+                    {'  '}<span className="text-neutral-600 dark:text-neutral-400">experience</span>: <span className="text-amber-600 dark:text-amber-400">"{experienceLabel}"</span>,
                   </div>
                   <div className="text-neutral-400 dark:text-neutral-600">
                     <span className="text-neutral-300 dark:text-neutral-700 select-none mr-4">06</span>
@@ -380,8 +383,8 @@ export const Hero: React.FC = () => {
               {/* Mini stats below the terminal */}
               <div className="grid grid-cols-3 gap-px mt-px">
                 <div className="bg-neutral-50/50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-4 text-center group hover:bg-white dark:hover:bg-black transition-colors">
-                  <div className="font-display text-2xl font-bold text-black dark:text-white tracking-tight">{profile?.years_of_experience || '1'}+</div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mt-1">Years Exp</div>
+                  <div className="font-display text-2xl font-bold text-black dark:text-white tracking-tight">{experienceLabel}</div>
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mt-1">Experience</div>
                 </div>
                 <div className="bg-neutral-50/50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-4 text-center group hover:bg-white dark:hover:bg-black transition-colors">
                   <div className="font-display text-2xl font-bold text-black dark:text-white tracking-tight">10+</div>

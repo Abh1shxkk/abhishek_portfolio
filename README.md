@@ -18,6 +18,8 @@ npm install
 npm run dev
 ```
 
+Create `portfolio-frontend/.env.local` from `portfolio-frontend/.env.example` before starting the app, then set `GEMINI_API_KEY` in that file.
+
 Open [http://localhost:3000](http://localhost:3000)
 
 ## Deployment

@@ -67,8 +67,6 @@ export const AIChat: React.FC = () => {
     }
   };
 
-  // Chat is always available (API key has hardcoded fallback in gemini.ts)
-
   return (
     <>
       {/* Floating Trigger */}

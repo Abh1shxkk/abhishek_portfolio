@@ -2,6 +2,17 @@ import React from 'react';
 import { SectionId } from '../types';
 import { useExperiences } from '../hooks/usePortfolio';
 
+const formatMonthYear = (date: string | null) => {
+  if (!date) {
+    return 'Present';
+  }
+
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    year: 'numeric',
+  });
+};
+
 export const Experience: React.FC = () => {
   const { data: experiences, isLoading, error } = useExperiences();
 
@@ -55,8 +66,9 @@ export const Experience: React.FC = () => {
               <div className="md:col-span-4">
                 <h3 className="text-2xl font-medium tracking-tight text-black dark:text-white">{job.position}</h3>
                 <div className="text-neutral-500 dark:text-neutral-400 mt-1 font-mono text-sm uppercase">{job.company}</div>
-                <div className="text-neutral-400 dark:text-neutral-600 mt-1 text-sm">
-                  {new Date(job.start_date).getFullYear()} — {job.is_current ? 'Present' : new Date(job.end_date!).getFullYear()}
+                <div className="text-neutral-400 dark:text-neutral-600 mt-1 text-sm font-mono uppercase tracking-wide">
+                  {formatMonthYear(job.start_date)} - {job.is_current ? 'Present' : formatMonthYear(job.end_date)}
+                  {job.duration_label ? ` • ${job.duration_label}` : ''}
                 </div>
               </div>
 
