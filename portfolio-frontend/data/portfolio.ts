@@ -42,7 +42,7 @@ export const EXPERIENCE_DATA: Experience[] = [
       'Built OPD Scan QC, OPD Scribe, ILMS and e-Mulyankan for the hospital, legal office and examinations department.',
     ],
     technologies: ['PHP', 'Laravel', 'Vue.js', 'Angular', 'FastAPI', 'Docker'],
-    company_logo: null,
+    company_logo: '/logos/subharti.png',
     website_url: 'https://subharti.org',
   },
   {
@@ -65,7 +65,7 @@ export const EXPERIENCE_DATA: Experience[] = [
       'Delivered Skills360, DelWell, Kairo Global and the company website with its admin CMS.',
     ],
     technologies: ['Laravel', 'MySQL', 'React', 'JavaScript', 'Tailwind CSS', 'GitLab CI/CD'],
-    company_logo: null,
+    company_logo: '/logos/global-matrix.png',
     website_url: 'https://globalmatrixsolution.com',
   },
 ];

@@ -73,6 +73,11 @@ export const Experience: React.FC = () => {
                     Current role
                   </span>
                 )}
+                {job.company_logo && (
+                  <div className="mb-4 w-14 h-14 border border-neutral-200 dark:border-neutral-700 bg-white p-1.5 overflow-hidden transition-all duration-300 group-hover:border-black dark:group-hover:border-white group-hover:-translate-y-0.5">
+                    <img src={job.company_logo} alt={`${job.company} logo`} loading="lazy" className="w-full h-full object-contain" />
+                  </div>
+                )}
                 <h3 className="text-2xl font-medium tracking-tight text-black dark:text-white">{job.position}</h3>
                 <div className="text-neutral-500 dark:text-neutral-400 mt-1 font-mono text-sm uppercase">
                   {job.website_url ? (
