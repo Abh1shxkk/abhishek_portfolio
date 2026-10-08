@@ -1,0 +1,9 @@
+{
+  "installCommand": "npm install --prefix portfolio-frontend",
+  "buildCommand": "npm run build --prefix portfolio-frontend",
+  "outputDirectory": "portfolio-frontend/dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
