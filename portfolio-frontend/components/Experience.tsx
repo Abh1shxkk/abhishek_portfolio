@@ -64,17 +64,45 @@ export const Experience: React.FC = () => {
 
               {/* Role & Company */}
               <div className="md:col-span-4">
+                {job.is_current && (
+                  <span className="inline-flex items-center gap-1.5 mb-3 text-[10px] font-mono uppercase tracking-[0.15em] text-green-600 dark:text-green-400">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-60" />
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
+                    </span>
+                    Current role
+                  </span>
+                )}
                 <h3 className="text-2xl font-medium tracking-tight text-black dark:text-white">{job.position}</h3>
-                <div className="text-neutral-500 dark:text-neutral-400 mt-1 font-mono text-sm uppercase">{job.company}</div>
+                <div className="text-neutral-500 dark:text-neutral-400 mt-1 font-mono text-sm uppercase">
+                  {job.website_url ? (
+                    <a href={job.website_url} target="_blank" rel="noopener noreferrer" className="hover:text-black dark:hover:text-white transition-colors">
+                      {job.company} ↗
+                    </a>
+                  ) : job.company}
+                </div>
                 <div className="text-neutral-400 dark:text-neutral-600 mt-1 text-sm font-mono uppercase tracking-wide">
                   {formatMonthYear(job.start_date)} - {job.is_current ? 'Present' : formatMonthYear(job.end_date)}
                   {job.duration_label ? ` • ${job.duration_label}` : ''}
                 </div>
+                {job.location && (
+                  <div className="text-neutral-400 dark:text-neutral-600 mt-1 text-xs font-mono">{job.location}</div>
+                )}
               </div>
 
-              {/* Description */}
+              {/* Description and responsibilities */}
               <div className="md:col-span-5 text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                <p>{job.description}</p>
+                <p className="text-black dark:text-white">{job.description}</p>
+                {job.responsibilities && job.responsibilities.length > 0 && (
+                  <ul className="mt-5 space-y-2.5">
+                    {job.responsibilities.map((item, i) => (
+                      <li key={i} className="flex gap-3 text-sm">
+                        <span className="mt-[9px] h-px w-3 flex-shrink-0 bg-neutral-400 dark:bg-neutral-600 transition-all duration-300 group-hover:w-5 group-hover:bg-black dark:group-hover:bg-white" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               {/* Tags */}

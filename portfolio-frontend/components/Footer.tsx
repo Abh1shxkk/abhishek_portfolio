@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
     <footer className="bg-black dark:bg-black text-white py-20 px-6 md:px-12 border-t border-neutral-900 dark:border-neutral-800">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-          <div className="md:col-span-6">
+          <div className="md:col-span-5">
             <h2 className="font-display text-3xl md:text-5xl tracking-tighter leading-none mb-8">
               LET'S BUILD<br />SOMETHING<br />SHARP.
             </h2>
@@ -25,7 +25,25 @@ export const Footer: React.FC = () => {
             )}
           </div>
           
-          <div className="md:col-span-3 md:col-start-8 space-y-6">
+          <div className="md:col-span-3 md:col-start-6 space-y-6">
+            <div>
+              <h4 className="text-neutral-500 text-xs uppercase tracking-widest mb-4">Contact</h4>
+              <ul className="space-y-2">
+                {profile?.email && (
+                  <li><a href={`mailto:${profile.email}`} className="text-sm hover:text-neutral-400 transition-colors break-all">{profile.email}</a></li>
+                )}
+                {profile?.phone && (
+                  <li><a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="text-sm hover:text-neutral-400 transition-colors">{profile.phone}</a></li>
+                )}
+                {profile?.location && <li><span className="text-sm text-neutral-500">{profile.location}</span></li>}
+                {profile?.resume_url && (
+                  <li><a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="text-sm underline underline-offset-4 decoration-neutral-600 hover:text-neutral-400 transition-colors">Download resume</a></li>
+                )}
+              </ul>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 space-y-6">
             <div>
               <h4 className="text-neutral-500 text-xs uppercase tracking-widest mb-4">Social</h4>
               {isLoading ? (

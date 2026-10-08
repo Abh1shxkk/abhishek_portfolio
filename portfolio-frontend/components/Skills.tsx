@@ -372,7 +372,7 @@ export const Skills: React.FC = () => {
               </h2>
               <div className="w-12 h-1 bg-black dark:bg-white mt-6 mb-4"></div>
               <p className="text-neutral-500 dark:text-neutral-400 max-w-md text-sm leading-relaxed">
-                A toolkit refined over years of building scalable applications and immersive web experiences.
+                The stack behind ERPs, hospital and legal systems, client platforms and stores I have shipped to production.
               </p>
             </div>
             <p className="font-mono text-xs uppercase tracking-widest text-neutral-400 dark:text-neutral-600 hidden md:block">

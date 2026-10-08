@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SectionId } from '../types';
 import { useProfile } from '../hooks/usePortfolio';
 import { resumeService } from '../services/portfolioService';
+import { PROJECTS_DATA, SKILLS_DATA } from '../data/portfolio';
 
 const ROTATING_WORDS = ['Developer', 'Engineer'];
 
@@ -100,10 +101,10 @@ export const Hero: React.FC = () => {
     },
   ];
 
-  const keywords = ['Laravel', 'PHP', 'JavaScript', 'WordPress', 'React', 'TypeScript', 'Node.js', 'Python', 'Full-Stack', 'Backend', 'Frontend'];
+  const keywords = ['Laravel', 'PHP', 'React', 'ERPs', 'AI-assisted', 'production', 'Subharti'];
 
   // Right-side decorative stats
-  const techStack = ['React', 'Laravel', 'TypeScript', 'Node.js', 'PHP', 'WordPress'];
+  const techStack = ['PHP', 'Laravel', 'React', 'Vue.js', 'FastAPI', 'Docker'];
 
   return (
     <section
@@ -276,6 +277,15 @@ export const Hero: React.FC = () => {
                   </span>
                 </button>
               )}
+              {!isLoading && profile?.phone && (
+                <a
+                  href={`tel:${profile.phone.replace(/\s+/g, '')}`}
+                  className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  {profile.phone}
+                </a>
+              )}
             </div>
 
             {/* ROW 5: CTA buttons */}
@@ -387,11 +397,11 @@ export const Hero: React.FC = () => {
                   <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mt-1">Experience</div>
                 </div>
                 <div className="bg-neutral-50/50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-4 text-center group hover:bg-white dark:hover:bg-black transition-colors">
-                  <div className="font-display text-2xl font-bold text-black dark:text-white tracking-tight">10+</div>
+                  <div className="font-display text-2xl font-bold text-black dark:text-white tracking-tight">{PROJECTS_DATA.length}</div>
                   <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mt-1">Projects</div>
                 </div>
                 <div className="bg-neutral-50/50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-4 text-center group hover:bg-white dark:hover:bg-black transition-colors">
-                  <div className="font-display text-2xl font-bold text-black dark:text-white tracking-tight">15+</div>
+                  <div className="font-display text-2xl font-bold text-black dark:text-white tracking-tight">{SKILLS_DATA.length}+</div>
                   <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mt-1">Tech Stack</div>
                 </div>
               </div>
