@@ -101,10 +101,10 @@ export const Hero: React.FC = () => {
     },
   ];
 
-  const keywords = ['Laravel', 'PHP', 'React', 'ERPs', 'AI-assisted', 'production', 'Subharti'];
+  const keywords = ['Laravel', 'PHP', 'Nodejs', 'React', 'ERPs', 'AI-assisted', 'production', 'Subharti'];
 
   // Right-side decorative stats
-  const techStack = ['PHP', 'Laravel', 'React', 'Vue.js', 'FastAPI', 'Docker'];
+  const techStack = ['PHP', 'Laravel', 'Node.js', 'React', 'Vue.js', 'Docker'];
 
   return (
     <section
