@@ -130,6 +130,31 @@ const project = (p: Partial<Project> & Pick<Project, 'id' | 'title' | 'slug'>): 
 
 export const PROJECTS_DATA: Project[] = [
   project({
+    id: 12,
+    title: 'QuickDrop',
+    slug: 'quickdrop',
+    category: 'Tool',
+    description: 'A web app that sends text, files and links from your browser to Telegram in one click. No app downloads, no phone needed.',
+    long_description: 'QuickDrop solves the everyday friction of sending something from your PC to someone on their phone. Instead of emailing yourself, forwarding through WhatsApp Web, or fumbling with cables, you paste your Telegram bot token, pick a contact and hit send. It supports text, images, videos, audio and documents up to 50 MB. Guest users store their token locally; signed-in users sync it to Supabase so it works across devices. Features include multi-contact broadcast, favorite contacts, message templates, send history, a QR code to open the app on your phone, full-page drag-and-drop, dark and light mode, and PWA support for Add to Home Screen.',
+    image_url: '/projects/quickdrop.png',
+    gallery_images: ['/projects/quickdrop-dark.png'],
+    technologies: ['Next.js 16', 'React 19', 'Tailwind CSS 4', 'Supabase', 'Telegram Bot API', 'TypeScript'],
+    features: [
+      'Send text, images, videos, audio and documents to any Telegram user, group or channel',
+      'No signup required: paste your bot token and start sending in seconds',
+      'Optional sign-in with email or Google to sync your token across devices',
+      'Multi-contact broadcast: select several contacts and send to all at once',
+      'Message templates, favorite contacts, send history and QR code sharing',
+      'Dark and light mode with a warm brownish theme, PWA support',
+    ],
+    github_url: 'https://github.com/Abh1shxkk/quickdrop',
+    website_url: 'https://quickdrop-rosy.vercel.app',
+    start_date: '2026-10-01',
+    role: 'Full Stack Developer',
+    status: 'live',
+    is_featured: true,
+  }),
+  project({
     id: 1,
     title: 'ILMS: Institutional Legal Management System',
     slug: 'ilms',
