@@ -130,6 +130,32 @@ const project = (p: Partial<Project> & Pick<Project, 'id' | 'title' | 'slug'>): 
 
 export const PROJECTS_DATA: Project[] = [
   project({
+    id: 13,
+    title: 'SVSU Knowledge Assistant',
+    slug: 'svsu-knowledge-assistant',
+    category: 'AI / RAG',
+    description: 'Ask questions about a university\'s official circulars in Hindi, English or Hinglish and get answers that cite the exact page and passage.',
+    long_description: 'Built for Swami Vivekanand Subharti University, where most notices are scanned paper circulars in Hindi and English, full of tables. Staff upload a document once: Tesseract OCR detects each page\'s script, rebuilds ruled tables cell by cell and flags words it was unsure of. Every paragraph is embedded and stored in PostgreSQL with pgvector. A question is rewritten into English and Hindi queries, matched by meaning plus exact codes and dates, re-ranked by a small model, and answered by GPT-4o only from those passages, with a numbered citation that opens the original scan at the cited row. A second model fact-checks the answer against its sources, and the answer streams in while it is written. Around it: draft-to-active approval workflow, roles and per-document visibility, background bulk import, automatic expiry, two-step verification, an automatic answer-quality test, and CI/CD from GitHub Actions to an AWS server with Docker and Caddy.',
+    image_url: '/projects/svsu-assistant.jpg',
+    gallery_images: ['/projects/svsu-answer.jpg', '/projects/svsu-dashboard.jpg', '/projects/svsu-library.jpg'],
+    technologies: ['FastAPI', 'Next.js 16', 'PostgreSQL + pgvector', 'OpenAI', 'Tesseract OCR', 'Docker', 'GitHub Actions', 'AWS'],
+    features: [
+      'Answers in Hindi, English or Hinglish, every claim cited to the exact page and passage',
+      'OCR for scanned Hindi and English circulars, with ruled tables rebuilt row by row',
+      'Hybrid search (vectors plus exact codes, dates and rare words), re-ranking and a fact check',
+      'Streaming answers with live progress; the original scan opens at the cited row',
+      'Approval workflow, 4 roles, per-document visibility, bulk import and automatic expiry',
+      'Two-step verification, sign-in lock-out, and CI/CD with tests to AWS on every push',
+    ],
+    github_url: 'https://github.com/Abh1shxkk/svsu-knowledge-assistant',
+    website_url: 'https://svsu.54-173-64-109.sslip.io',
+    start_date: '2026-10-01',
+    client: 'Swami Vivekanand Subharti University',
+    role: 'Full Stack and AI Developer',
+    status: 'live',
+    is_featured: true,
+  }),
+  project({
     id: 12,
     title: 'QuickDrop',
     slug: 'quickdrop',
