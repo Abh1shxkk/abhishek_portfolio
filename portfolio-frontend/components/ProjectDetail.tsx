@@ -131,6 +131,11 @@ export const ProjectDetailPage: React.FC = () => {
               Live Website
             </a>
           )}
+          {project.app_url && (
+            <a href={project.app_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 border border-black dark:border-white text-black dark:text-white text-xs font-mono uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+              Android App
+            </a>
+          )}
           {project.demo_url && (
             <a href={project.demo_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 text-xs font-mono uppercase tracking-widest hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors">
               Demo

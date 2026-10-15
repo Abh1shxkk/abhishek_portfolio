@@ -51,6 +51,8 @@ export interface Project {
   github_url: string | null;
   demo_url: string | null;
   website_url: string | null;
+  /** Download page for a mobile app, shown as its own button. */
+  app_url?: string | null;
   start_date: string | null;
   end_date: string | null;
   client: string | null;
