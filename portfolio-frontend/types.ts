@@ -111,12 +111,10 @@ export interface BlogPost {
 // UI Types
 export enum SectionId {
   Hero = 'hero',
-  Profile = 'profile',
-  Experience = 'experience',
-  Projects = 'projects',
+  Journey = 'journey',
   Skills = 'skills',
-  Education = 'education',
-  Blog = 'blog',
+  Projects = 'work',
+  Contact = 'contact',
 }
 
 export interface ChatMessage {
@@ -126,3 +124,18 @@ export interface ChatMessage {
 }
 
 export type Theme = 'light' | 'dark' | 'system';
+
+// Stops on the 3D journey road
+export type Accent = 'saffron' | 'amber' | 'coral' | 'rose';
+
+export interface Milestone {
+  id: string;
+  /** Short label painted on the road sign, e.g. "2021" */
+  when: string;
+  title: string;
+  place: string;
+  detail: string;
+  accent: Accent;
+  /** Projects built at this stop, by Project.id */
+  projectIds: number[];
+}

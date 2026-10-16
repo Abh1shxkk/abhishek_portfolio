@@ -72,7 +72,7 @@ export const AIChat: React.FC = () => {
       {/* Floating Trigger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 bg-black dark:bg-white text-white dark:text-black border border-black dark:border-white transition-transform duration-300 ${isOpen ? 'rotate-45' : 'hover:scale-105'}`}
+        className={`press fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex items-center justify-center w-14 h-14 rounded-lg bg-ink text-paper shadow-lift transition-transform duration-300 ${isOpen ? 'rotate-45' : 'hover:scale-105 hover:-rotate-6'}`}
         aria-label="Toggle AI Chat"
       >
         {isOpen ? (
@@ -86,13 +86,13 @@ export const AIChat: React.FC = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-8 z-40 w-80 sm:w-96 bg-white dark:bg-geo-dark-card border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] animate-in slide-in-from-bottom-4 fade-in duration-200 flex flex-col max-h-[500px]">
-          <div className="p-4 border-b border-black dark:border-white bg-neutral-50 dark:bg-black flex justify-between items-center">
-            <span className="font-display font-bold text-lg tracking-tight text-black dark:text-white">
-              ASK {profile?.full_name?.split(' ')[0]?.toUpperCase() || 'AI'}_AI
+        <div className="pop-in fixed bottom-24 right-4 md:right-8 z-40 w-[calc(100vw-2rem)] sm:w-96 overflow-hidden rounded-lg bg-surface/95 backdrop-blur-xl border border-line shadow-lift flex flex-col max-h-[520px]">
+          <div className="px-5 py-4 border-b border-line flex justify-between items-center">
+            <span className="text-sm font-semibold tracking-tight text-ink">
+              Ask about {firstName}
             </span>
             <div className="flex space-x-1">
-               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+               <div className="pulse-dot w-2 h-2 bg-saffron rounded-full"></div>
             </div>
           </div>
 
@@ -101,8 +101,8 @@ export const AIChat: React.FC = () => {
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] p-3 text-sm leading-relaxed ${
                   msg.role === 'user' 
-                    ? 'bg-black text-white dark:bg-white dark:text-black' 
-                    : 'bg-neutral-100 dark:bg-neutral-900 text-black dark:text-neutral-200 border border-neutral-200 dark:border-neutral-800'
+                    ? 'bg-ink text-paper rounded-lg rounded-br-sm' 
+                    : 'bg-paper text-ink border border-line rounded-lg rounded-bl-sm'
                 }`}>
                   {msg.text}
                 </div>
@@ -110,11 +110,11 @@ export const AIChat: React.FC = () => {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-neutral-100 dark:bg-neutral-900 text-black border border-neutral-200 dark:border-neutral-800 p-3 text-sm">
+                <div className="bg-paper border border-line rounded-lg rounded-bl-sm p-3 text-sm">
                   <span className="inline-flex space-x-1">
-                    <span className="w-1 h-1 bg-black dark:bg-white animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                    <span className="w-1 h-1 bg-black dark:bg-white animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                    <span className="w-1 h-1 bg-black dark:bg-white animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce" style={{ animationDelay: '300ms' }}></span>
                   </span>
                 </div>
               </div>
@@ -122,19 +122,19 @@ export const AIChat: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-3 border-t border-black dark:border-white bg-white dark:bg-geo-dark-card">
+          <div className="p-3 border-t border-line">
             <form onSubmit={handleSend} className="flex gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 bg-transparent border-b border-neutral-300 dark:border-neutral-700 focus:border-black dark:focus:border-white outline-none px-2 py-2 text-sm font-mono transition-colors text-black dark:text-white placeholder-neutral-400"
+                className="flex-1 rounded-md bg-paper border border-line focus:border-ink/30 outline-none px-4 py-2 text-sm transition-colors text-ink placeholder:text-muted"
               />
               <button 
                 type="submit" 
                 disabled={!input.trim() || isLoading}
-                className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50"
+                className="press rounded-md px-4 py-2 bg-ink text-paper text-sm font-medium disabled:opacity-40"
               >
                 Send
               </button>

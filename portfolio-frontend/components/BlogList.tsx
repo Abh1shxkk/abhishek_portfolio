@@ -64,7 +64,7 @@ export const BlogList: React.FC = () => {
   };
 
   return (
-    <div className="blog-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
+    <div className="blog-page bg-paper min-h-screen transition-colors duration-300">
       {/* Back to Portfolio Link */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 pt-28 md:pt-32">
         <Link
@@ -83,7 +83,7 @@ export const BlogList: React.FC = () => {
       <div className={`max-w-7xl mx-auto px-6 md:px-12 pt-12 pb-16 transition-all duration-700 ease-out ${headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} ref={headerRef}>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           <div className="md:col-span-6">
-            <h1 className="font-display text-4xl md:text-5xl font-medium tracking-tight text-black dark:text-white">
+            <h1 className="font-display text-4xl md:text-5xl font-medium tracking-tight text-ink">
               BLOG<span className="text-neutral-300 dark:text-neutral-700">.</span>
             </h1>
             <div className="h-px w-12 bg-black dark:bg-white mt-4" />
@@ -92,7 +92,7 @@ export const BlogList: React.FC = () => {
             </p>
           </div>
           <div className="md:col-span-6 md:flex md:items-end md:justify-end">
-            <p className="text-neutral-500 dark:text-neutral-400 text-lg leading-relaxed md:text-right max-w-md">
+            <p className="text-muted text-lg leading-relaxed md:text-right max-w-md">
               Thoughts on technology, development, and the craft of building digital products.
             </p>
           </div>
@@ -129,7 +129,7 @@ export const BlogList: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-[16/10] bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800" />
+                <div className="aspect-[16/10] bg-neutral-100 dark:bg-neutral-900 border border-line" />
                 <div className="pt-5 space-y-3">
                   <div className="h-3 w-20 bg-neutral-100 dark:bg-neutral-900" />
                   <div className="h-5 w-3/4 bg-neutral-100 dark:bg-neutral-900" />
@@ -145,8 +145,8 @@ export const BlogList: React.FC = () => {
       {/* Error State */}
       {error && (
         <div className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
-          <div className="border border-neutral-200 dark:border-neutral-800 p-12 text-center">
-            <p className="text-neutral-500 dark:text-neutral-400 font-mono text-sm">
+          <div className="border border-line p-12 text-center">
+            <p className="text-muted font-mono text-sm">
               Error loading blog posts. Please try again later.
             </p>
           </div>
@@ -157,8 +157,8 @@ export const BlogList: React.FC = () => {
       {!isLoading && !error && (
         <div className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
           {posts.length === 0 ? (
-            <div className="border border-neutral-200 dark:border-neutral-800 p-12 text-center">
-              <p className="text-neutral-500 dark:text-neutral-400 text-lg">
+            <div className="border border-line p-12 text-center">
+              <p className="text-muted text-lg">
                 No blog posts yet. Check back soon!
               </p>
             </div>
@@ -262,7 +262,7 @@ export const BlogList: React.FC = () => {
 
               {/* Pagination */}
               {blogData?.meta?.last_page > 1 && (
-                <div className="flex items-center justify-center gap-4 mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+                <div className="flex items-center justify-center gap-4 mt-16 pt-8 border-t border-line">
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page <= 1}

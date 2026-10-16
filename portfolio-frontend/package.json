@@ -18,10 +18,12 @@
     "react-router-dom": "^7.13.0",
     "rehype-highlight": "^7.0.2",
     "rehype-slug": "^6.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "three": "^0.169.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/three": "^0.169.0",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"

@@ -150,7 +150,7 @@ export const BlogPostPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="blog-post-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
+      <div className="blog-post-page bg-paper min-h-screen transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-6 md:px-12 pt-28 md:pt-32 pb-24 animate-pulse">
           <div className="h-4 w-24 bg-neutral-100 dark:bg-neutral-900 mb-8" />
           <div className="h-8 w-3/4 bg-neutral-100 dark:bg-neutral-900 mb-4" />
@@ -168,7 +168,7 @@ export const BlogPostPage: React.FC = () => {
 
   if (error || !post) {
     return (
-      <div className="blog-post-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
+      <div className="blog-post-page bg-paper min-h-screen transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-6 md:px-12 pt-28 md:pt-32 pb-24">
           <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors mb-12 group">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-x-1">
@@ -177,9 +177,9 @@ export const BlogPostPage: React.FC = () => {
             </svg>
             Back to Blog
           </Link>
-          <div className="border border-neutral-200 dark:border-neutral-800 p-12 text-center">
-            <h1 className="text-2xl font-display font-medium text-black dark:text-white mb-4">Post Not Found</h1>
-            <p className="text-neutral-500 dark:text-neutral-400">
+          <div className="border border-line p-12 text-center">
+            <h1 className="text-2xl font-display font-medium text-ink mb-4">Post Not Found</h1>
+            <p className="text-muted">
               The blog post you're looking for doesn't exist or has been removed.
             </p>
           </div>
@@ -189,7 +189,7 @@ export const BlogPostPage: React.FC = () => {
   }
 
   return (
-    <div className="blog-post-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
+    <div className="blog-post-page bg-paper min-h-screen transition-colors duration-300">
       {/* Header area */}
       <div className="max-w-4xl mx-auto px-6 md:px-12 pt-28 md:pt-32">
         {/* Back link */}
@@ -207,7 +207,7 @@ export const BlogPostPage: React.FC = () => {
         {/* Post Meta */}
         <div className="flex items-center gap-3 mb-5 flex-wrap">
           {post.category && (
-            <span className="text-[11px] font-mono uppercase tracking-[0.15em] px-3 py-1 border border-black dark:border-white text-black dark:text-white">
+            <span className="text-[11px] font-mono uppercase tracking-[0.15em] px-3 py-1 border border-black dark:border-white text-ink">
               {post.category}
             </span>
           )}
@@ -227,13 +227,13 @@ export const BlogPostPage: React.FC = () => {
         </div>
 
         {/* Title */}
-        <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-black dark:text-white leading-[1.1] mb-6">
+        <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-ink leading-[1.1] mb-6">
           {post.title}
         </h1>
 
         {/* Excerpt */}
         {post.excerpt && (
-          <p className="text-lg md:text-xl text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-2xl mb-8">
+          <p className="text-lg md:text-xl text-muted leading-relaxed max-w-2xl mb-8">
             {post.excerpt}
           </p>
         )}
@@ -326,7 +326,7 @@ export const BlogPostPage: React.FC = () => {
 
             {/* Tags Section Below Content */}
             {post.tags && post.tags.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="mt-12 pt-8 border-t border-line">
                 <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 block mb-4">
                   Tags
                 </span>
@@ -335,7 +335,7 @@ export const BlogPostPage: React.FC = () => {
                     <Link
                       key={tag}
                       to={`/blog?tag=${tag}`}
-                      className="text-xs font-mono border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-neutral-500 dark:text-neutral-400 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors duration-300"
+                      className="text-xs font-mono border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-muted hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors duration-300"
                     >
                       #{tag}
                     </Link>
@@ -376,9 +376,9 @@ export const BlogPostPage: React.FC = () => {
 
       {/* Related Posts */}
       {relatedPosts.length > 0 && (
-        <div className="border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0d0d0d] transition-colors duration-300">
+        <div className="border-t border-line bg-neutral-50 dark:bg-[#0d0d0d] transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-6 md:px-12 py-20">
-            <h2 className="font-display text-2xl font-medium tracking-tight text-black dark:text-white mb-12">
+            <h2 className="font-display text-2xl font-medium tracking-tight text-ink mb-12">
               Related Articles<span className="text-neutral-300 dark:text-neutral-700">.</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -389,7 +389,7 @@ export const BlogPostPage: React.FC = () => {
                   className="group block"
                 >
                   {related.featured_image && (
-                    <div className="aspect-[16/10] overflow-hidden border border-neutral-200 dark:border-neutral-800 mb-4">
+                    <div className="aspect-[16/10] overflow-hidden border border-line mb-4">
                       <img
                         src={related.featured_image}
                         alt={related.title}

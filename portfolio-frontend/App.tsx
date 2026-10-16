@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { Profile } from './components/Profile';
-
-import { Experience } from './components/Experience';
-import { Projects } from './components/Projects';
-import { Skills } from './components/Skills';
-import { Education } from './components/Education';
+import { World } from './components/World';
+import { ContactPanel, HeroPanel, JourneyPanel, ProjectsPanel, SkillsPanel } from './components/panels';
 import { Footer } from './components/Footer';
+import { ScrollProgress } from './components/ui';
 import { AIChat } from './components/AIChat';
 import { BlogList } from './components/BlogList';
 import { BlogPostPage } from './components/BlogPost';
@@ -19,14 +15,13 @@ import { useProfile } from './hooks/usePortfolio';
 
 // Theme Provider Hook
 const useTheme = () => {
-  const [theme, setTheme] = useState<Theme>('system');
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      return (localStorage.getItem('theme') as Theme | null) ?? 'system';
+    } catch {
+      return 'system';
     }
-  }, []);
+  });
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -39,7 +34,11 @@ const useTheme = () => {
       root.classList.add(theme);
     }
 
-    localStorage.setItem('theme', theme);
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      // Storage can be unavailable (private mode); the theme still applies for this visit
+    }
   }, [theme]);
 
   useEffect(() => {
@@ -70,6 +69,14 @@ const PortfolioHome: React.FC<{ activeSection: string; setActiveSection: (s: str
   activeSection, setActiveSection, theme, onToggleTheme
 }) => {
   const { data: profile } = useProfile();
+  const { hash } = useLocation();
+
+  // Links such as /#story from other pages land on the right section
+  useEffect(() => {
+    if (!hash) return;
+    const t = setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth' }), 80);
+    return () => clearTimeout(t);
+  }, [hash]);
 
   useEffect(() => {
     if (profile?.full_name) {
@@ -99,17 +106,21 @@ const PortfolioHome: React.FC<{ activeSection: string; setActiveSection: (s: str
   }, [setActiveSection]);
 
   return (
-    <div className="bg-white dark:bg-geo-dark-bg min-h-screen selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-300">
+    <div className="grain bg-paper min-h-screen">
+      <ScrollProgress />
       <Header activeSection={activeSection} theme={theme} onToggleTheme={onToggleTheme} />
-      <main>
-        <Hero />
-        <Profile />
-        <Experience />
-        <Skills />
-        <Projects />
-        <Education />
-      </main>
-      <Footer />
+      <World>
+        <main>
+          <HeroPanel />
+          <JourneyPanel />
+          <SkillsPanel />
+          <ProjectsPanel />
+          <ContactPanel />
+        </main>
+        <div className="bg-paper/85 backdrop-blur">
+          <Footer />
+        </div>
+      </World>
       <AIChat />
     </div>
   );
@@ -120,7 +131,8 @@ const ContentLayout: React.FC<{ children: React.ReactNode; theme: Theme; onToggl
   children, theme, onToggleTheme, activeNav
 }) => {
   return (
-    <div className="bg-white dark:bg-geo-dark-bg min-h-screen selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-300">
+    <div className="grain bg-paper min-h-screen">
+      <ScrollProgress />
       <Header activeSection={activeNav} theme={theme} onToggleTheme={onToggleTheme} />
       {children}
       <Footer />

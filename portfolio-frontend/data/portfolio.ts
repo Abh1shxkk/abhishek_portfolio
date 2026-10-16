@@ -1,4 +1,4 @@
-import { Profile, Experience, Education, Project, Skill, BlogPost } from '../types';
+import { Profile, Experience, Education, Project, Skill, BlogPost, Milestone } from '../types';
 
 // ─── PROFILE DATA ───
 export const PROFILE_DATA: Profile = {
@@ -371,6 +371,75 @@ export const PROJECTS_DATA: Project[] = [
     website_url: 'https://dotify-one.vercel.app',
     status: 'live',
   }),
+];
+
+// ─── JOURNEY ───
+// Stops along the 3D road on the home page, oldest first.
+// projectIds link a stop to the projects built there.
+export const JOURNEY: Milestone[] = [
+  {
+    id: 'school',
+    when: '2019',
+    title: 'High School',
+    place: 'R S M S Vidya Mandir',
+    detail: 'Finished high school, then Intermediate with Physics, Chemistry and Maths in 2021.',
+    accent: 'amber',
+    projectIds: [],
+  },
+  {
+    id: 'btech',
+    when: '2021',
+    title: 'B.Tech, Computer Science',
+    place: 'IIMT University, Meerut',
+    detail: 'Four years of CS fundamentals: data structures, databases, operating systems and networks.',
+    accent: 'amber',
+    projectIds: [],
+  },
+  {
+    id: 'global-matrix',
+    when: '2025',
+    title: 'First developer job',
+    place: 'Global Matrix Solution',
+    detail: 'Full Stack Web Developer. Laravel and MySQL backends, CRM, CMS and LMS platforms, GitLab CI/CD.',
+    accent: 'coral',
+    projectIds: [7, 8, 10, 6],
+  },
+  {
+    id: 'subharti',
+    when: '2026',
+    title: 'University IT team',
+    place: 'Subharti University',
+    detail: 'Junior PHP Developer. I maintain the ERP used by 100+ colleges and build new college websites.',
+    accent: 'saffron',
+    projectIds: [],
+  },
+  {
+    id: 'ai-tools',
+    when: '2026',
+    title: 'AI tools in production',
+    place: 'Hospital, legal office, exams',
+    detail: 'Shipped ILMS, OPD Scan QC, OPD Scribe and e-Mulyankan, each with a human checking the AI.',
+    accent: 'saffron',
+    projectIds: [1, 2, 3, 4],
+  },
+  {
+    id: 'rag',
+    when: 'Now',
+    title: 'RAG assistant and side projects',
+    place: 'Web and Android',
+    detail: 'SVSU Knowledge Assistant answers from scanned circulars with citations. QuickDrop and Dotify on the side.',
+    accent: 'rose',
+    projectIds: [13, 12, 11],
+  },
+  {
+    id: 'next',
+    when: 'Next',
+    title: 'Your team?',
+    place: 'Open to new roles',
+    detail: 'Looking for a team building serious web platforms or AI-assisted tools.',
+    accent: 'coral',
+    projectIds: [],
+  },
 ];
 
 // ─── SKILLS DATA (Grouped) ───

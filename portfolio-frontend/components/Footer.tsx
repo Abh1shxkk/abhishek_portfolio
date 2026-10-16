@@ -1,83 +1,51 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useProfile } from '../hooks/usePortfolio';
+import { Icon } from './ui';
 
 export const Footer: React.FC = () => {
-  const { data: profile, isLoading } = useProfile();
-  const currentYear = new Date().getFullYear();
+  const { data: profile } = useProfile();
+  const year = new Date().getFullYear();
+
+  const links = [
+    { label: 'GitHub', href: profile?.github_url },
+    { label: 'LinkedIn', href: profile?.linkedin_url },
+    { label: 'X', href: profile?.twitter_url },
+    { label: 'Email', href: profile?.email ? `mailto:${profile.email}` : null },
+  ].filter((l) => l.href);
 
   return (
-    <footer className="bg-black dark:bg-black text-white py-20 px-6 md:px-12 border-t border-neutral-900 dark:border-neutral-800">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-          <div className="md:col-span-5">
-            <h2 className="font-display text-3xl md:text-5xl tracking-tighter leading-none mb-8">
-              LET'S BUILD<br />SOMETHING<br />SHARP.
-            </h2>
-            {isLoading ? (
-              <span className="inline-block h-12 w-40 bg-neutral-800 animate-pulse rounded"></span>
-            ) : (
-              <a 
-                href={`mailto:${profile?.email}`}
-                className="inline-block border border-white px-8 py-3 text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors"
-              >
-                Get in Touch
-              </a>
-            )}
-          </div>
-          
-          <div className="md:col-span-3 md:col-start-6 space-y-6">
-            <div>
-              <h4 className="text-neutral-500 text-xs uppercase tracking-widest mb-4">Contact</h4>
-              <ul className="space-y-2">
-                {profile?.email && (
-                  <li><a href={`mailto:${profile.email}`} className="text-sm hover:text-neutral-400 transition-colors break-all">{profile.email}</a></li>
-                )}
-                {profile?.phone && (
-                  <li><a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="text-sm hover:text-neutral-400 transition-colors">{profile.phone}</a></li>
-                )}
-                {profile?.location && <li><span className="text-sm text-neutral-500">{profile.location}</span></li>}
-                {profile?.resume_url && (
-                  <li><a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="text-sm underline underline-offset-4 decoration-neutral-600 hover:text-neutral-400 transition-colors">Download resume</a></li>
-                )}
-              </ul>
-            </div>
-          </div>
-
-          <div className="md:col-span-2 space-y-6">
-            <div>
-              <h4 className="text-neutral-500 text-xs uppercase tracking-widest mb-4">Social</h4>
-              {isLoading ? (
-                <ul className="space-y-2">
-                  <li><span className="inline-block h-5 w-24 bg-neutral-800 animate-pulse rounded"></span></li>
-                  <li><span className="inline-block h-5 w-20 bg-neutral-800 animate-pulse rounded"></span></li>
-                  <li><span className="inline-block h-5 w-16 bg-neutral-800 animate-pulse rounded"></span></li>
-                </ul>
-              ) : (
-                <ul className="space-y-2">
-                  {profile?.twitter_url && (
-                    <li><a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="text-sm hover:text-neutral-400 transition-colors">Twitter / X</a></li>
-                  )}
-                  {profile?.linkedin_url && (
-                    <li><a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-sm hover:text-neutral-400 transition-colors">LinkedIn</a></li>
-                  )}
-                  {profile?.github_url && (
-                    <li><a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="text-sm hover:text-neutral-400 transition-colors">GitHub</a></li>
-                  )}
-                </ul>
-              )}
-            </div>
-          </div>
-           
-           <div className="md:col-span-2 space-y-6">
-            <div>
-              <h4 className="text-neutral-500 text-xs uppercase tracking-widest mb-4">Legal</h4>
-              <ul className="space-y-2">
-                <li><span className="text-sm text-neutral-600">© {currentYear}</span></li>
-                <li><span className="text-sm text-neutral-600">All Rights Reserved</span></li>
-              </ul>
-            </div>
-          </div>
+    <footer className="mx-auto max-w-5xl px-5 md:px-8 pb-10">
+      <div className="flex flex-col gap-6 border-t border-line pt-8 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3 text-sm text-muted">
+          <Link to="/" className="font-semibold text-ink">
+            {profile?.full_name}
+            <span className="text-saffron">.</span>
+          </Link>
+          <span>© {year}</span>
         </div>
+
+        <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
+          <Link to="/projects" className="link-draw hover:text-ink transition-colors">Projects</Link>
+          {links.map((l) => (
+            <a
+              key={l.label}
+              href={l.href!}
+              target={l.href!.startsWith('mailto:') ? undefined : '_blank'}
+              rel="noopener noreferrer"
+              className="link-draw hover:text-ink transition-colors"
+            >
+              {l.label}
+            </a>
+          ))}
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="group press ml-1 grid h-9 w-9 place-items-center rounded-full border border-line text-muted hover:text-ink hover:border-ink/30 transition-colors"
+            aria-label="Back to top"
+          >
+            <Icon.ArrowUp size={15} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+          </button>
+        </nav>
       </div>
     </footer>
   );

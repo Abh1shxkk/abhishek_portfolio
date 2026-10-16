@@ -1,35 +1,33 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useProject, useProjects } from '../hooks/usePortfolio';
+import { JOURNEY } from '../data/portfolio';
+import { projectAccent } from './panels';
+import { Icon, Reveal, SlipArrow, Spotlight, accentBg, accentChip, accentText } from './ui';
 
 const formatDateRange = (startDate: string | null, endDate: string | null): string | null => {
   if (!startDate && !endDate) return null;
-
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-
-  if (startDate && endDate) return `${formatDate(startDate)} - ${formatDate(endDate)}`;
-  if (startDate) return `${formatDate(startDate)} - Present`;
-  if (endDate) return `Until ${formatDate(endDate)}`;
-  return null;
+  const formatDate = (date: string) => new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+  if (startDate && endDate) return `${formatDate(startDate)} – ${formatDate(endDate)}`;
+  if (startDate) return `${formatDate(startDate)} – Present`;
+  return `Until ${formatDate(endDate!)}`;
 };
 
 export const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: project, isLoading, error } = useProject(id || '');
+  const { data: project } = useProject(id || '');
   const { data: allProjects } = useProjects();
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
-  const relatedProjects = useMemo(() => {
-    if (!project || !allProjects) return [];
-    return allProjects
-      .filter((item) => item.id !== project.id && item.category === project.category)
-      .slice(0, 3);
+  const timeline = formatDateRange(project?.start_date ?? null, project?.end_date ?? null);
+  const accent = project ? projectAccent(project.id) : 'saffron';
+  const stop = project ? JOURNEY.find((m) => m.projectIds.includes(project.id)) : null;
+
+  const nextProject = useMemo(() => {
+    if (!project || !allProjects?.length) return null;
+    const i = allProjects.findIndex((p) => p.id === project.id);
+    return allProjects[(i + 1) % allProjects.length];
   }, [project, allProjects]);
-
-  const timeline = useMemo(
-    () => formatDateRange(project?.start_date ?? null, project?.end_date ?? null),
-    [project?.start_date, project?.end_date]
-  );
 
   useEffect(() => {
     if (!project) return;
@@ -40,245 +38,222 @@ export const ProjectDetailPage: React.FC = () => {
   }, [project]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, [id]);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setLightbox(null);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightbox]);
+
+  if (!project) {
     return (
-      <div className="project-detail-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
-        <div className="max-w-5xl mx-auto px-6 md:px-12 pt-28 md:pt-32 pb-24 animate-pulse">
-          <div className="h-4 w-28 bg-neutral-100 dark:bg-neutral-900 mb-8" />
-          <div className="h-10 w-2/3 bg-neutral-100 dark:bg-neutral-900 mb-6" />
-          <div className="aspect-[16/9] bg-neutral-100 dark:bg-neutral-900 mb-12" />
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((index) => (
-              <div key={index} className="h-4 bg-neutral-100 dark:bg-neutral-900" style={{ width: `${90 - index * 8}%` }} />
-            ))}
-          </div>
-        </div>
+      <div className="mx-auto max-w-3xl px-5 md:px-8 pt-40 pb-24 text-center">
+        <h1 className="text-3xl font-semibold tracking-tight text-ink">This project doesn't exist</h1>
+        <p className="mt-3 text-muted">It may have been renamed or removed.</p>
+        <Link to="/projects" className="press mt-8 inline-flex items-center gap-2 rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-paper">
+          <Icon.ArrowLeft size={15} /> All projects
+        </Link>
       </div>
     );
   }
 
-  if (error || !project) {
-    return (
-      <div className="project-detail-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
-        <div className="max-w-5xl mx-auto px-6 md:px-12 pt-28 md:pt-32 pb-24">
-          <Link to="/projects" className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors mb-12 group">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-x-1">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            Back to Projects
-          </Link>
-          <div className="border border-neutral-200 dark:border-neutral-800 p-12 text-center">
-            <h1 className="text-2xl font-display font-medium text-black dark:text-white mb-4">Project Not Found</h1>
-            <p className="text-neutral-500 dark:text-neutral-400">
-              The project you are looking for does not exist or is no longer published.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const links = [
+    { label: 'Live website', href: project.website_url, primary: true },
+    { label: 'Android app', href: project.app_url, primary: false },
+    { label: 'Demo', href: project.demo_url, primary: false },
+    { label: 'Source code', href: project.github_url, primary: false },
+  ].filter((l) => l.href);
+
+  const facts = [
+    { label: 'Client', value: project.client },
+    { label: 'Role', value: project.role },
+    { label: 'Status', value: project.status },
+    { label: 'Timeline', value: timeline },
+  ].filter((f) => f.value);
+
+  const gallery = [project.image_url, ...(project.gallery_images ?? [])].filter(Boolean) as string[];
 
   return (
-    <div className="project-detail-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
-      <div className="max-w-5xl mx-auto px-6 md:px-12 pt-28 md:pt-32 pb-10">
-        <Link
-          to="/projects"
-          className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors duration-300 mb-10 group"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-x-1">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Back to Projects
-        </Link>
+    <div className="relative overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-[520px] dot-grid pointer-events-none" />
+      <div className={`aurora w-[480px] h-[380px] -top-40 -right-24 ${accentBg[accent]}/30`} />
 
-        <div className="flex items-center gap-3 mb-5 flex-wrap">
-          <span className="text-[11px] font-mono uppercase tracking-[0.15em] px-3 py-1 border border-black dark:border-white text-black dark:text-white">
-            {project.category || 'General'}
-          </span>
-          {project.status && (
-            <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600">
-              {project.status}
-            </span>
+      <article className="relative mx-auto max-w-5xl px-5 md:px-8 pt-32 md:pt-40 pb-20">
+        <Reveal>
+          <Link to="/projects" className="group inline-flex items-center gap-2 text-sm text-muted hover:text-ink transition-colors">
+            <Icon.ArrowLeft size={15} className="transition-transform duration-300 group-hover:-translate-x-1" />
+            All projects
+          </Link>
+
+          <div className="mt-10 flex flex-wrap items-center gap-2.5">
+            <span className={`rounded-md px-3 py-1 text-xs font-medium ring-1 ring-inset ${accentChip[accent]}`}>{project.category}</span>
+            {stop && (
+              <Link to="/#journey" className="group text-xs text-muted hover:text-ink transition-colors">
+                {stop.when} · <span className="link-draw">{stop.place}</span>
+              </Link>
+            )}
+          </div>
+
+          <h1 className="mt-5 max-w-4xl text-4xl md:text-6xl leading-[1.04] font-semibold tracking-[-0.035em] text-ink">
+            {project.title}
+          </h1>
+          {project.description && (
+            <p className="mt-5 max-w-3xl text-lg md:text-xl leading-relaxed text-muted">{project.description}</p>
           )}
-          {timeline && (
-            <>
-              <span className="text-neutral-300 dark:text-neutral-700">·</span>
-              <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600">
-                {timeline}
-              </span>
-            </>
+
+          {links.length > 0 && (
+            <div className="mt-8 flex flex-wrap gap-2.5">
+              {links.map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`group press inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-medium transition-colors
+                    ${l.primary ? 'shine bg-ink text-paper shadow-lift' : 'border border-line bg-surface/60 text-ink hover:border-ink/30'}`}
+                >
+                  {l.label}
+                  <SlipArrow size={14} />
+                </a>
+              ))}
+            </div>
           )}
-        </div>
+        </Reveal>
 
-        <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-black dark:text-white leading-[1.1] mb-6">
-          {project.title}
-        </h1>
-
-        {project.description && (
-          <p className="text-lg md:text-xl text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-3xl mb-8">
-            {project.description}
-          </p>
+        {project.image_url && (
+          <Reveal delay={120}>
+            <Spotlight accent={accent} tilt className="mt-14 rounded-lg border border-line bg-surface p-2 shadow-lift">
+              <button
+                onClick={() => setLightbox(project.image_url)}
+                className="relative z-[3] block w-full overflow-hidden rounded-md border border-line cursor-zoom-in"
+                aria-label="View screenshot full size"
+              >
+                <img src={project.image_url} alt={project.title} className="w-full h-auto" />
+              </button>
+            </Spotlight>
+          </Reveal>
         )}
 
-        <div className="flex gap-3 flex-wrap mb-8">
-          {project.website_url && (
-            <a href={project.website_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 border border-black dark:border-white text-black dark:text-white text-xs font-mono uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
-              Live Website
-            </a>
-          )}
-          {project.app_url && (
-            <a href={project.app_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 border border-black dark:border-white text-black dark:text-white text-xs font-mono uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
-              Android App
-            </a>
-          )}
-          {project.demo_url && (
-            <a href={project.demo_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 text-xs font-mono uppercase tracking-widest hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors">
-              Demo
-            </a>
-          )}
-          {project.github_url && (
-            <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 text-xs font-mono uppercase tracking-widest hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors">
-              Source Code
-            </a>
-          )}
-        </div>
-
-        <div className="h-px bg-neutral-200 dark:bg-neutral-800 mb-10" />
-      </div>
-
-      {project.image_url && (
-        <div className="max-w-6xl mx-auto px-6 md:px-12 mb-12">
-          <div className="aspect-[16/9] overflow-hidden border border-neutral-200 dark:border-neutral-800">
-            <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-6xl mx-auto px-6 md:px-12 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="mt-16 grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-8">
-            {project.long_description ? (
-              <div className="space-y-4 text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                {project.long_description.split('\n').filter(Boolean).map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+            <Reveal>
+              <h2 className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">About the project</h2>
+              <div className="mt-4 space-y-4 text-[16.5px] leading-[1.75] text-ink/85">
+                {(project.long_description || project.description || '')
+                  .split('\n')
+                  .filter(Boolean)
+                  .map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
               </div>
-            ) : (
-              <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed">
-                {project.description}
-              </p>
-            )}
+            </Reveal>
 
             {project.features && project.features.length > 0 && (
-              <div className="mt-12">
-                <h2 className="font-display text-2xl font-medium tracking-tight text-black dark:text-white mb-5">
-                  Key Features<span className="text-neutral-300 dark:text-neutral-700">.</span>
-                </h2>
-                <ul className="space-y-3">
-                  {project.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-neutral-600 dark:text-neutral-300">
-                      <span className="mt-[7px] w-1.5 h-1.5 bg-black dark:bg-white rounded-full" />
-                      <span>{feature}</span>
+              <Reveal>
+                <h2 className="mt-14 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">What it does</h2>
+                <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {project.features.map((feature, i) => (
+                    <li
+                      key={feature}
+                      className="group flex gap-3 rounded-lg border border-line bg-surface/60 p-4 text-[14.5px] leading-relaxed text-ink/85 transition-all duration-300 hover:-translate-y-0.5 hover:bg-surface hover:shadow-soft"
+                    >
+                      <span className={`font-mono text-xs mt-0.5 ${accentText[accent]}`}>{String(i + 1).padStart(2, '0')}</span>
+                      {feature}
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
-
-            {project.gallery_images && project.gallery_images.length > 0 && (
-              <div className="mt-12">
-                <h2 className="font-display text-2xl font-medium tracking-tight text-black dark:text-white mb-5">
-                  Gallery<span className="text-neutral-300 dark:text-neutral-700">.</span>
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {project.gallery_images.map((image, index) => (
-                    <div key={`${image}-${index}`} className="aspect-[4/3] overflow-hidden border border-neutral-200 dark:border-neutral-800">
-                      <img src={image} alt={`${project.title} screenshot ${index + 1}`} className="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              </Reveal>
             )}
           </div>
 
           <aside className="lg:col-span-4">
-            <div className="border border-neutral-200 dark:border-neutral-800 p-6">
-              <h3 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mb-5">
-                Project Info
-              </h3>
-              <div className="space-y-4">
-                {project.client && (
-                  <div>
-                    <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mb-1">Client</p>
-                    <p className="text-sm text-black dark:text-white">{project.client}</p>
-                  </div>
+            <Reveal delay={100} className="lg:sticky lg:top-28">
+              <div className="rounded-lg border border-line bg-surface p-6 shadow-soft">
+                {facts.length > 0 && (
+                  <dl className="space-y-4">
+                    {facts.map((f) => (
+                      <div key={f.label}>
+                        <dt className="text-xs text-muted">{f.label}</dt>
+                        <dd className="mt-0.5 text-sm font-medium capitalize text-ink">{f.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 )}
-                {project.role && (
-                  <div>
-                    <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mb-1">Role</p>
-                    <p className="text-sm text-black dark:text-white">{project.role}</p>
-                  </div>
-                )}
-                {project.status && (
-                  <div>
-                    <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mb-1">Status</p>
-                    <p className="text-sm text-black dark:text-white">{project.status}</p>
-                  </div>
-                )}
-                {timeline && (
-                  <div>
-                    <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mb-1">Timeline</p>
-                    <p className="text-sm text-black dark:text-white">{timeline}</p>
+                {project.technologies && project.technologies.length > 0 && (
+                  <div className={facts.length > 0 ? 'mt-6 border-t border-line pt-6' : ''}>
+                    <p className="text-xs text-muted">Built with</p>
+                    <ul className="mt-3 flex flex-wrap gap-1.5">
+                      {project.technologies.map((t) => (
+                        <li key={t} className="rounded-md border border-line px-2.5 py-1 text-[12px] text-ink/85">
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>
-
-              {project.technologies && project.technologies.length > 0 && (
-                <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-800">
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mb-3">Tech Stack</p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((technology) => (
-                      <span key={technology} className="text-[10px] font-mono uppercase tracking-widest border border-neutral-200 dark:border-neutral-700 px-2 py-1 text-neutral-500 dark:text-neutral-400">
-                        {technology}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            </Reveal>
           </aside>
         </div>
-      </div>
 
-      {relatedProjects.length > 0 && (
-        <div className="border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0d0d0d] transition-colors duration-300">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 py-20">
-            <h2 className="font-display text-2xl font-medium tracking-tight text-black dark:text-white mb-12">
-              Related Projects<span className="text-neutral-300 dark:text-neutral-700">.</span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {relatedProjects.map((related) => (
-                <Link key={related.id} to={`/projects/${related.id}`} className="group block">
-                  {related.image_url && (
-                    <div className="aspect-[16/10] overflow-hidden border border-neutral-200 dark:border-neutral-800 mb-4">
-                      <img src={related.image_url} alt={related.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" loading="lazy" />
-                    </div>
-                  )}
-                  {related.category && (
-                    <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-neutral-400 dark:text-neutral-600">{related.category}</span>
-                  )}
-                  <h3 className="font-display text-lg font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-black dark:group-hover:text-white transition-colors duration-300 leading-snug mt-2">
-                    {related.title}
-                  </h3>
-                </Link>
+        {gallery.length > 1 && (
+          <Reveal>
+            <h2 className="mt-20 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Screens</h2>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {gallery.slice(1).map((image, i) => (
+                <button
+                  key={image}
+                  onClick={() => setLightbox(image)}
+                  className="group overflow-hidden rounded-lg border border-line bg-surface p-1.5 shadow-soft cursor-zoom-in"
+                  aria-label={`View screenshot ${i + 2} full size`}
+                >
+                  <div className="aspect-[4/3] overflow-hidden rounded-xl">
+                    <img src={image} alt={`${project.title} screenshot ${i + 2}`} loading="lazy" className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105" />
+                  </div>
+                </button>
               ))}
             </div>
-          </div>
+          </Reveal>
+        )}
+
+        {nextProject && nextProject.id !== project.id && (
+          <Reveal>
+            <Link
+              to={`/projects/${nextProject.id}`}
+              className="group mt-24 flex items-center gap-5 rounded-lg border border-line bg-surface p-3 pr-6 shadow-soft transition-all duration-300 hover:shadow-lift hover:-translate-y-0.5"
+            >
+              <span className="h-20 w-32 shrink-0 overflow-hidden rounded-lg border border-line bg-paper">
+                {nextProject.image_url && (
+                  <img src={nextProject.image_url} alt="" className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-110" />
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs text-muted">Next project</span>
+                <span className="mt-1 block truncate text-lg md:text-xl font-semibold tracking-tight text-ink">{nextProject.title}</span>
+              </span>
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-ink text-paper transition-transform duration-300 group-hover:translate-x-1">
+                <Icon.ArrowRight size={17} />
+              </span>
+            </Link>
+          </Reveal>
+        )}
+      </article>
+
+      {/* Full-size screenshot viewer */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[80] grid place-items-center bg-black/80 backdrop-blur-sm p-4 md:p-10 cursor-zoom-out"
+          onClick={() => setLightbox(null)}
+          role="dialog"
+          aria-label="Screenshot"
+        >
+          <img src={lightbox} alt="" className="pop-in max-h-full max-w-full rounded-xl shadow-2xl" />
+          <button className="absolute top-5 right-5 grid h-10 w-10 place-items-center rounded-md bg-white/10 text-white hover:bg-white/20" aria-label="Close">
+            <Icon.Close size={18} />
+          </button>
         </div>
       )}
     </div>

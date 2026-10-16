@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SectionId, Theme } from '../types';
 import { useProfile } from '../hooks/usePortfolio';
 import { resumeService } from '../services/portfolioService';
+import { BLOG_DATA } from '../data/portfolio';
+import { Icon } from './ui';
 
 interface HeaderProps {
   activeSection: string;
@@ -11,220 +12,201 @@ interface HeaderProps {
   onToggleTheme: () => void;
 }
 
+type NavItem = { id: string; label: string; section?: SectionId; route?: string };
+
+const NAV_ITEMS: NavItem[] = [
+  { id: SectionId.Journey, label: 'Journey', section: SectionId.Journey },
+  { id: SectionId.Projects, label: 'Work', section: SectionId.Projects },
+  { id: SectionId.Skills, label: 'Skills', section: SectionId.Skills },
+  { id: 'projects', label: 'All projects', route: '/projects' },
+  // The blog link only appears once there is something to read
+  ...(BLOG_DATA.length > 0 ? [{ id: 'blog', label: 'Blog', route: '/blog' }] : []),
+];
+
+const themeLabel: Record<Theme, string> = { light: 'Light', dark: 'Dark', system: 'System' };
+
+const ThemeIcon: React.FC<{ theme: Theme; size?: number }> = ({ theme, size = 16 }) => (
+  <span key={theme} className="spin-in inline-flex">
+    {theme === 'light' && <Icon.Sun size={size} />}
+    {theme === 'dark' && <Icon.Moon size={size} />}
+    {theme === 'system' && <Icon.Monitor size={size} />}
+  </span>
+);
+
 export const Header: React.FC<HeaderProps> = ({ activeSection, theme, onToggleTheme }) => {
   const { data: profile } = useProfile();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close mobile menu on resize to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMobileMenuOpen]);
-
   const navigate = useNavigate();
   const location = useLocation();
-  const isOnBlogPage = location.pathname.startsWith('/blog');
-  const isOnProjectsPage = location.pathname.startsWith('/projects');
+  const isHome = location.pathname === '/';
 
-  const scrollTo = (id: string) => {
-    if (isOnBlogPage || isOnProjectsPage) {
-      // Navigate home first, then scroll
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pill, setPill] = useState<{ left: number; width: number; visible: boolean }>({ left: 0, width: 0, visible: false });
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => setIsMenuOpen(false), [location.pathname]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const isActive = (item: NavItem) =>
+    item.route ? location.pathname.startsWith(item.route) : isHome && activeSection === item.section;
+
+  // The highlight pill sits under the hovered link, or the active one when nothing is hovered
+  const target = hovered ?? NAV_ITEMS.find(isActive)?.id ?? null;
+  useLayoutEffect(() => {
+    const el = target ? itemRefs.current[target] : null;
+    if (el) setPill({ left: el.offsetLeft, width: el.offsetWidth, visible: true });
+    else setPill((p) => ({ ...p, visible: false }));
+  }, [target, isScrolled]);
+
+  const scrollToSection = (id: string) => {
+    if (!isHome) {
       navigate('/');
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 120);
     } else {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     }
-    setIsMobileMenuOpen(false);
   };
 
-  const goToRoute = (route: string) => {
-    navigate(route);
-    setIsMobileMenuOpen(false);
+  const go = (item: NavItem) => {
+    setIsMenuOpen(false);
+    if (item.route) navigate(item.route);
+    else if (item.section) scrollToSection(item.section);
   };
 
-  const navItems = [
-    { id: 'projects', label: 'Projects', route: '/projects' },
-    { id: 'blog', label: 'Blog', route: '/blog' },
-  ];
+  const firstName = profile?.full_name?.split(' ')[0] ?? '';
+  const initials = profile?.full_name?.split(' ').map((n) => n[0]).join('') ?? '';
 
   return (
-    <>
-    <header className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/90 dark:bg-geo-dark-bg/90 backdrop-blur-md border-b border-neutral-200 dark:border-geo-dark-border py-3' : 'bg-transparent py-6'}`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
-        <div 
-          className="font-display font-bold text-xl tracking-tighter cursor-pointer select-none hover:opacity-60 transition-opacity dark:text-white"
-          onClick={() => {
-            if (isOnBlogPage || isOnProjectsPage) {
-              navigate('/');
-            } else {
-              scrollTo(SectionId.Hero);
-            }
-          }}
+    <header className="fixed top-0 inset-x-0 z-50 px-4 pt-4 md:pt-5 pointer-events-none">
+      <div
+        className={`pointer-events-auto mx-auto max-w-6xl flex items-center justify-between gap-3 rounded-xl border transition-all duration-500 ease-out
+          ${isScrolled || isMenuOpen
+            ? 'bg-surface/75 dark:bg-surface/70 backdrop-blur-xl border-line shadow-soft py-2 pl-2 pr-2'
+            : 'bg-transparent border-transparent py-3 pl-1 pr-1'}`}
+      >
+        {/* Brand */}
+        <button
+          onClick={() => (isHome ? window.scrollTo({ top: 0, behavior: 'smooth' }) : navigate('/'))}
+          className="group flex items-center gap-2.5 rounded-full pr-3 press"
+          aria-label="Back to top"
         >
-          {profile?.full_name?.toUpperCase() || 'LOADING...'}
-        </div>
+          <span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-ink text-paper text-xs font-semibold tracking-tight">
+            {profile?.avatar ? (
+              <img src={profile.avatar} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            ) : (
+              initials
+            )}
+          </span>
+          <span className="text-sm font-semibold tracking-tight text-ink">
+            {firstName}
+            <span className="text-saffron">.</span>
+          </span>
+        </button>
 
-        <div className="flex items-center gap-8">
-          <nav className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => goToRoute(item.route)}
-                className={`text-sm font-medium uppercase tracking-wider transition-colors relative
-                  ${location.pathname.startsWith(item.route) || activeSection === item.id ? 'text-black dark:text-white' : 'text-neutral-400 hover:text-black dark:hover:text-white'}
-                `}
-              >
-                {item.label}
-                {(location.pathname.startsWith(item.route) || activeSection === item.id) && (
-                  <span className="absolute -bottom-1 left-0 w-full h-[1px] bg-black dark:bg-white"></span>
-                )}
-              </button>
-            ))}
-          </nav>
-
-          {profile?.resume_url && (
+        {/* Desktop nav */}
+        <nav className="relative hidden md:flex items-center" onMouseLeave={() => setHovered(null)}>
+          <span
+            aria-hidden="true"
+            className="absolute top-1/2 -translate-y-1/2 h-8 rounded-full bg-ink/[0.06] dark:bg-ink/[0.09] transition-all duration-300 ease-out"
+            style={{ left: pill.left, width: pill.width, opacity: pill.visible ? 1 : 0 }}
+          />
+          {NAV_ITEMS.map((item) => (
             <button
-              onClick={() => resumeService.download()}
-              className="hidden md:flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-black font-mono text-xs tracking-widest uppercase hover:opacity-80 transition-opacity"
+              key={item.id}
+              ref={(el) => { itemRefs.current[item.id] = el; }}
+              onMouseEnter={() => setHovered(item.id)}
+              onFocus={() => setHovered(item.id)}
+              onBlur={() => setHovered(null)}
+              onClick={() => go(item)}
+              className={`relative z-10 px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-200
+                ${isActive(item) ? 'text-ink' : 'text-muted hover:text-ink'}`}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Resume
+              {item.label}
             </button>
-          )}
+          ))}
+        </nav>
 
-          <button 
+        {/* Actions */}
+        <div className="flex items-center gap-1.5">
+          <button
             onClick={onToggleTheme}
-            className="w-8 h-8 flex items-center justify-center border border-neutral-200 dark:border-geo-dark-border rounded hover:bg-neutral-100 dark:hover:bg-geo-dark-card transition-colors text-black dark:text-white"
-            aria-label={`Current theme: ${theme}. Click to switch.`}
+            className="grid h-9 w-9 place-items-center rounded-full text-muted hover:text-ink hover:bg-ink/[0.06] transition-colors press"
+            aria-label={`Theme: ${themeLabel[theme]}. Click to switch.`}
+            title={`Theme: ${themeLabel[theme]}`}
           >
-            {theme === 'light' && (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            )}
-            {theme === 'dark' && (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            )}
-            {theme === 'system' && (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            )}
+            <ThemeIcon theme={theme} />
           </button>
 
-          <button 
-             className="md:hidden p-2 text-black dark:text-white"
-             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-             aria-label="Toggle mobile menu"
+          <button
+            onClick={() => scrollToSection(SectionId.Contact)}
+            className="hidden md:inline-flex shine press items-center gap-2 rounded-md bg-ink px-4 py-2 text-[13px] font-medium text-paper"
           >
-            <div className={`w-6 h-[2px] bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-[5px]' : 'mb-1.5'}`}></div>
-            <div className={`w-6 h-[2px] bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-[3px]' : ''}`}></div>
+            <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-saffron" />
+            Let's talk
+          </button>
+
+          <button
+            className="md:hidden grid h-9 w-9 place-items-center rounded-full text-ink hover:bg-ink/[0.06] press"
+            onClick={() => setIsMenuOpen((o) => !o)}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
+          >
+            <span key={String(isMenuOpen)} className="spin-in inline-flex">
+              {isMenuOpen ? <Icon.Close size={18} /> : <Icon.Menu size={18} />}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div
+        className={`pointer-events-auto md:hidden mx-auto max-w-6xl mt-2 origin-top rounded-xl border border-line bg-surface/90 backdrop-blur-xl shadow-lift p-2 transition-all duration-300 ease-out
+          ${isMenuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}
+      >
+        <nav className="flex flex-col">
+          {NAV_ITEMS.map((item, i) => (
+            <button
+              key={item.id}
+              onClick={() => go(item)}
+              className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left text-base font-medium transition-colors
+                ${isActive(item) ? 'bg-ink/[0.06] text-ink' : 'text-muted hover:text-ink hover:bg-ink/[0.04]'}`}
+              style={{ transitionDelay: isMenuOpen ? `${i * 30}ms` : '0ms' }}
+            >
+              {item.label}
+              <Icon.ArrowRight size={16} className="opacity-40" />
+            </button>
+          ))}
+        </nav>
+        <div className="mt-2 grid grid-cols-2 gap-2 border-t border-line pt-2">
+          {profile?.resume_url && (
+            <button
+              onClick={() => { resumeService.download(); setIsMenuOpen(false); }}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-line px-4 py-3 text-sm font-medium text-ink press"
+            >
+              <Icon.Download size={16} /> Résumé
+            </button>
+          )}
+          <button
+            onClick={() => go({ id: 'contact', label: 'Contact', section: SectionId.Contact })}
+            className="flex items-center justify-center gap-2 rounded-2xl bg-ink px-4 py-3 text-sm font-medium text-paper press"
+          >
+            Let's talk
           </button>
         </div>
       </div>
     </header>
-
-    {/* Mobile Menu - Rendered via Portal to avoid stacking context issues */}
-    {createPortal(
-        <>
-          {/* Mobile Menu Overlay */}
-          <div 
-            className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] md:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-
-          {/* Mobile Menu Panel */}
-          <div 
-            className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-geo-dark-bg border-l border-neutral-200 dark:border-geo-dark-border z-[101] md:hidden transform transition-transform duration-300 ease-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
-          >
-            <div className="pt-20 px-6">
-              <nav className="flex flex-col gap-1">
-                {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => goToRoute(item.route)}
-                    className={`text-left text-lg font-medium uppercase tracking-wider transition-colors py-3
-                      ${location.pathname.startsWith(item.route) || activeSection === item.id ? 'text-black dark:text-white' : 'text-neutral-400 hover:text-black dark:hover:text-white'}
-                    `}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </nav>
-
-              <div className="mt-6 pt-6 border-t border-neutral-200/50 dark:border-geo-dark-border/50 flex flex-col gap-4">
-                <button 
-                  onClick={onToggleTheme}
-                  className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
-                >
-                  {theme === 'light' && (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                  )}
-                  {theme === 'dark' && (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                  )}
-                  {theme === 'system' && (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                  )}
-                  <span className="text-sm uppercase tracking-wider">
-                    {theme === 'light' ? 'Light Mode' : theme === 'dark' ? 'Dark Mode' : 'System'}
-                  </span>
-                </button>
-
-                {profile?.resume_url && (
-                  <button
-                    onClick={() => {
-                      resumeService.download();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                      <polyline points="7 10 12 15 17 10"></polyline>
-                      <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    <span className="text-sm uppercase tracking-wider">Download Resume</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </>,
-        document.body
-      )}
-    </>
   );
 };

@@ -1,24 +1,22 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProjects } from '../hooks/usePortfolio';
+import { projectAccent } from './panels';
+import { Eyebrow, Icon, Reveal, SlipArrow, Spotlight, accentBg } from './ui';
 
 export const ProjectsList: React.FC = () => {
-  const { data: projects, isLoading, error } = useProjects();
+  const { data: projects } = useProjects();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-  const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set());
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const cardRefs = useRef<(HTMLElement | null)[]>([]);
 
-  const categories = useMemo(() => {
-    if (!projects) return [];
-    return Array.from(new Set(projects.map((project) => project.category).filter(Boolean) as string[])).sort();
-  }, [projects]);
+  const categories = useMemo(
+    () => Array.from(new Set((projects ?? []).map((p) => p.category).filter(Boolean) as string[])).sort(),
+    [projects]
+  );
 
-  const filteredProjects = useMemo(() => {
-    if (!projects) return [];
-    if (!selectedCategory) return projects;
-    return projects.filter((project) => project.category === selectedCategory);
-  }, [projects, selectedCategory]);
+  const filteredProjects = useMemo(
+    () => (projects ?? []).filter((p) => !selectedCategory || p.category === selectedCategory),
+    [projects, selectedCategory]
+  );
 
   useEffect(() => {
     document.title = 'Projects | Abhishek Chauhan';
@@ -27,203 +25,99 @@ export const ProjectsList: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setHeaderVisible(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    cardRefs.current.forEach((el, index) => {
-      if (!el) return;
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setVisibleCards((prev) => new Set(prev).add(index));
-            observer.disconnect();
-          }
-        },
-        { threshold: 0.1 }
-      );
-      observer.observe(el);
-      observers.push(observer);
-    });
-
-    return () => observers.forEach((observer) => observer.disconnect());
-  }, [filteredProjects]);
-
-  useEffect(() => {
-    setVisibleCards(new Set());
-  }, [selectedCategory]);
+  const filters = [undefined, ...categories];
 
   return (
-    <div className="projects-page bg-white dark:bg-geo-dark-bg min-h-screen transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 pt-28 md:pt-32">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors duration-300 group"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-x-1">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Portfolio
-        </Link>
-      </div>
+    <div className="relative overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-[480px] dot-grid pointer-events-none" />
+      <div className="aurora w-[460px] h-[360px] -top-40 -right-24 bg-saffron/30" />
 
-      <div className={`max-w-7xl mx-auto px-6 md:px-12 pt-12 pb-16 transition-all duration-700 ease-out ${headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          <div className="md:col-span-6">
-            <h1 className="font-display text-4xl md:text-5xl font-medium tracking-tight text-black dark:text-white">
-              PROJECTS<span className="text-neutral-300 dark:text-neutral-700">.</span>
+      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-32 md:pt-40 pb-24">
+        <Reveal>
+          <Link to="/" className="group inline-flex items-center gap-2 text-sm text-muted hover:text-ink transition-colors">
+            <Icon.ArrowLeft size={15} className="transition-transform duration-300 group-hover:-translate-x-1" />
+            Home
+          </Link>
+          <div className="mt-10">
+            <Eyebrow accent="saffron">{filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}</Eyebrow>
+            <h1 className="mt-5 max-w-3xl text-4xl md:text-6xl leading-[1.04] font-semibold tracking-[-0.035em] text-ink">
+              All projects
             </h1>
-            <div className="h-px w-12 bg-black dark:bg-white mt-4" />
-            <p className="text-sm font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mt-4">
-              {filteredProjects.length} {filteredProjects.length === 1 ? 'Project' : 'Projects'}
+            <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-muted">
+              Hospital tools, a legal platform, ERPs, client websites and the small utilities I built for myself.
             </p>
           </div>
-          <div className="md:col-span-6 md:flex md:items-end md:justify-end">
-            <p className="text-neutral-500 dark:text-neutral-400 text-lg leading-relaxed md:text-right max-w-md">
-              Deep dives into products I have designed, built, and shipped across web and mobile.
-            </p>
-          </div>
-        </div>
-      </div>
+        </Reveal>
 
-      {categories.length > 0 && (
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pb-12">
-          <div className="flex items-center gap-1 overflow-x-auto pb-2">
-            <button
-              onClick={() => setSelectedCategory(undefined)}
-              className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-colors ${!selectedCategory
-                  ? 'border-black dark:border-white text-black dark:text-white'
-                  : 'border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white'
-                }`}
-            >
-              All
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-colors ${selectedCategory === category
-                    ? 'border-black dark:border-white text-black dark:text-white'
-                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white'
-                  }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-          <div className="h-px bg-neutral-200 dark:bg-neutral-800 mt-2" />
-        </div>
-      )}
-
-      {isLoading && (
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[1, 2, 3, 4].map((index) => (
-              <div key={index} className="animate-pulse">
-                <div className="aspect-[16/10] bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800" />
-                <div className="pt-5 space-y-3">
-                  <div className="h-3 w-24 bg-neutral-100 dark:bg-neutral-900" />
-                  <div className="h-6 w-2/3 bg-neutral-100 dark:bg-neutral-900" />
-                  <div className="h-4 w-full bg-neutral-100 dark:bg-neutral-900" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
-          <div className="border border-neutral-200 dark:border-neutral-800 p-12 text-center">
-            <p className="text-neutral-500 dark:text-neutral-400 font-mono text-sm">
-              Error loading projects. Please try again later.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {!isLoading && !error && (
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
-          {filteredProjects.length === 0 ? (
-            <div className="border border-neutral-200 dark:border-neutral-800 p-12 text-center">
-              <p className="text-neutral-500 dark:text-neutral-400 text-lg">
-                No projects found for this category.
-              </p>
+        {categories.length > 0 && (
+          <Reveal delay={100}>
+            <div className="mt-10 -mx-5 px-5 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
+              {filters.map((category) => {
+                const active = selectedCategory === category;
+                return (
+                  <button
+                    key={category ?? 'all'}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`press shrink-0 rounded-md border px-4 py-2 text-[13px] font-medium transition-all duration-300
+                      ${active ? 'border-ink bg-ink text-paper shadow-soft' : 'border-line bg-surface/60 text-muted hover:text-ink hover:border-ink/25'}`}
+                  >
+                    {category ?? 'All'}
+                  </button>
+                );
+              })}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredProjects.map((project, index) => (
-                <article
-                  key={project.id}
-                  ref={(el) => { cardRefs.current[index] = el; }}
-                  className={`group transition-all duration-700 ease-out ${visibleCards.has(index) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                    }`}
-                  style={{ transitionDelay: `${(index % 2) * 120}ms` }}
-                >
-                  <Link to={`/projects/${project.id}`} className="block border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-colors">
-                    <div className="aspect-[16/10] overflow-hidden border-b border-neutral-200 dark:border-neutral-800">
-                      {project.image_url ? (
-                        <img
-                          src={project.image_url}
-                          alt={project.title}
-                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-[1.03] transition-all duration-700"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-400 dark:text-neutral-600 font-mono text-xs uppercase tracking-widest">
-                          No Preview
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-neutral-400 dark:text-neutral-600">
-                          {project.category || 'General'}
-                        </span>
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-600">
-                          #{String(index + 1).padStart(2, '0')}
-                        </span>
+          </Reveal>
+        )}
+
+        {filteredProjects.length === 0 ? (
+          <p className="mt-16 rounded-lg border border-line p-12 text-center text-muted">No projects in this category yet.</p>
+        ) : (
+          <div className="mt-12 grid gap-x-8 gap-y-14 md:grid-cols-2">
+            {filteredProjects.map((project, index) => {
+              const accent = projectAccent(project.id);
+              return (
+                <Reveal key={`${selectedCategory ?? 'all'}-${project.id}`} delay={(index % 2) * 110}>
+                  <Link to={`/projects/${project.id}`} className="group block">
+                    <Spotlight accent={accent} tilt className="rounded-lg border border-line bg-surface p-1.5 shadow-soft transition-shadow duration-500 group-hover:shadow-lift">
+                      <div className="relative z-[3] aspect-[16/10] overflow-hidden rounded-md border border-line bg-paper">
+                        {project.image_url ? (
+                          <img
+                            src={project.image_url}
+                            alt={project.title}
+                            loading="lazy"
+                            className="h-full w-full object-cover object-top transition-transform duration-[1.2s] ease-out group-hover:scale-[1.05]"
+                          />
+                        ) : (
+                          <div className="grid h-full place-items-center text-sm text-muted">No preview</div>
+                        )}
                       </div>
-
-                      <h2 className="font-display text-2xl font-medium tracking-tight text-black dark:text-white mb-3 group-hover:translate-x-1 transition-transform duration-300">
-                        {project.title}
-                      </h2>
-
-                      {project.description && (
-                        <p className="text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
-                          {project.description}
-                        </p>
-                      )}
-
-                      {project.technologies && project.technologies.length > 0 && (
-                        <div className="flex gap-2 flex-wrap mb-5">
-                          {project.technologies.slice(0, 4).map((technology) => (
-                            <span key={technology} className="text-[10px] font-mono border border-neutral-200 dark:border-neutral-700 px-2 py-1 text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">
-                              {technology}
-                            </span>
-                          ))}
+                    </Spotlight>
+                    <div className="mt-5 flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 text-xs text-muted">
+                          <span className={`h-1.5 w-1.5 rounded-full ${accentBg[accent]}`} />
+                          {project.category}
+                          {project.status && <span className="capitalize">· {project.status}</span>}
                         </div>
-                      )}
-
-                      <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-black dark:text-white">
-                        View Project
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:translate-x-1">
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                          <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
+                        <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-ink">{project.title}</h2>
+                        <p className="mt-2 text-[15px] leading-relaxed text-muted line-clamp-2">{project.description}</p>
+                        {project.technologies && project.technologies.length > 0 && (
+                          <p className="mt-3 truncate font-mono text-[11.5px] text-muted/80">
+                            {project.technologies.slice(0, 4).join(' · ')}
+                          </p>
+                        )}
                       </div>
+                      <span className="mt-6 grid h-10 w-10 shrink-0 place-items-center rounded-md border border-line text-muted transition-all duration-300 group-hover:bg-ink group-hover:text-paper group-hover:border-ink">
+                        <SlipArrow size={15} />
+                      </span>
                     </div>
                   </Link>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                </Reveal>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
