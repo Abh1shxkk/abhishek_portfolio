@@ -21,11 +21,12 @@ Without a key the chat shows an "off air" message instead of failing.
 ### How the chat keeps the key secret
 
 The browser never sees the Gemini key. The chat widget posts the conversation to
-[`api/chat.ts`](api/chat.ts), a Vercel serverless function that holds the key, calls Gemini and returns the reply.
+[`server/chatHandler.ts`](portfolio-frontend/server/chatHandler.ts), a serverless function that holds the key, calls
+Gemini and returns the reply.
 `npm run dev` serves the same function locally. The function also rejects other websites' origins, caps message size
 and history, and rate-limits each IP to 20 messages per 10 minutes.
 
-On Vercel, set `GEMINI_API_KEY` under **Settings → Environment Variables**. Never put it in `vite.config.ts` `define`
+In production the key is a Cloudflare Pages secret (`npm run deploy:secret`), or on Vercel an environment variable. Never put it in `vite.config.ts` `define`
 or a `VITE_` variable: those are compiled into the public JavaScript. If you use a custom domain, add it to
 `ALLOWED_ORIGINS` (comma-separated hostnames).
 
@@ -59,8 +60,27 @@ Project screenshots go in `public/projects/` and are referenced by `image_url`.
 
 ## Deployment
 
-Configured for **Vercel**: import the repository, keep the root at the repository root (the root `vercel.json` builds
-`portfolio-frontend`), deploy. SPA rewrites are already set.
+Deployed on **Cloudflare Pages** with the Wrangler CLI (installed as a dev dependency). From `portfolio-frontend`:
+
+```bash
+npx wrangler login          # once: opens the browser to authorise your Cloudflare account
+npm run deploy              # build, then upload dist/ and functions/ to the "abhishek-portfolio" project
+npm run deploy:secret       # once (or when rotating): stores GEMINI_API_KEY as an encrypted secret
+```
+
+The first `npm run deploy` creates the project; the site is served at `https://abhishek-portfolio.pages.dev`.
+Deep links such as `/projects/13` work without a redirects file, because Pages falls back to `index.html` for a
+single-page app. To test the production runtime locally, put `GEMINI_API_KEY=...` in `portfolio-frontend/.dev.vars`
+(git-ignored) and run `npm run build && npx wrangler pages dev dist`.
+
+The chat backend lives in [`server/chatHandler.ts`](portfolio-frontend/server/chatHandler.ts) and only uses
+web-standard `fetch`, `Request` and `Response`. Thin adapters run it on each platform:
+
+| Where | File |
+|---|---|
+| Cloudflare Pages | [`portfolio-frontend/functions/api/chat.ts`](portfolio-frontend/functions/api/chat.ts) |
+| Vercel (still works: import the repo with the root at the repository root) | [`api/chat.ts`](api/chat.ts) |
+| `npm run dev` | the `devApi` plugin in [`vite.config.ts`](portfolio-frontend/vite.config.ts) |
 
 ## How the 3D world is kept fast
 

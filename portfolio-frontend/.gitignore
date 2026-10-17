@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 heroku.yml
 .vercel
+
+# Cloudflare / Wrangler
+.wrangler
+.dev.vars

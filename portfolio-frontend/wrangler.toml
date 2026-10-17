@@ -1,0 +1,6 @@
+# Cloudflare Pages config, used by `npm run deploy` (wrangler pages deploy).
+# The site is static (dist/); /api/chat is a Pages Function in functions/api/chat.ts.
+# Secrets are not stored here: set them with `npx wrangler pages secret put GEMINI_API_KEY`.
+name = "abhishek-portfolio"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-01"

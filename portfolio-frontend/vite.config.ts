@@ -5,15 +5,14 @@ import react from '@vitejs/plugin-react';
 // Secrets such as GEMINI_API_KEY are server-only. Never add them to `define` or a VITE_ variable:
 // anything in the client bundle can be read by every visitor.
 
-/** Serves the Vercel function in /api/chat.ts during `npm run dev`, so the chat works locally. */
+/** Serves the chat backend (server/chatHandler.ts) during `npm run dev`, so the chat works locally. */
 const devApi = (env: Record<string, string>): Plugin => ({
   name: 'dev-api',
   apply: 'serve',
   configureServer(server: ViteDevServer) {
-    if (env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY) process.env.GEMINI_API_KEY = env.GEMINI_API_KEY;
     server.middlewares.use('/api/chat', async (req, res) => {
       try {
-        const mod = await server.ssrLoadModule(path.resolve(__dirname, '../api/chat.ts'));
+        const mod = await server.ssrLoadModule(path.resolve(__dirname, 'server/chatHandler.ts'));
         const chunks: Buffer[] = [];
         for await (const chunk of req) chunks.push(chunk as Buffer);
         const request = new Request(`http://${req.headers.host}/api/chat`, {
@@ -21,8 +20,8 @@ const devApi = (env: Record<string, string>): Plugin => ({
           headers: req.headers as Record<string, string>,
           body: req.method === 'POST' ? Buffer.concat(chunks) : undefined,
         });
-        const handler = req.method === 'POST' ? mod.POST : mod.GET;
-        const response: Response = await handler(request);
+        const chatEnv = { GEMINI_API_KEY: env.GEMINI_API_KEY || process.env.GEMINI_API_KEY, ALLOWED_ORIGINS: env.ALLOWED_ORIGINS };
+        const response: Response = req.method === 'POST' ? await mod.handleChat(request, chatEnv) : mod.chatStatus(chatEnv);
         res.statusCode = response.status;
         response.headers.forEach((value, key) => res.setHeader(key, value));
         res.end(await response.text());
