@@ -307,15 +307,28 @@ export const SlipArrow: React.FC<{ size?: number; className?: string }> = ({ siz
   </span>
 );
 
-/** Tracks the `dark` class on <html>, which the theme hook toggles. */
-export const useDarkMode = () => {
+/**
+ * Tracks the `dark` class on <html>, which the theme hook toggles.
+ * `deferred` waits until the page has painted the new theme before reporting it, so heavy
+ * work keyed on it (rebuilding the 3D world) never delays the theme switch on screen.
+ */
+export const useDarkMode = ({ deferred = false } = {}) => {
   const read = () => document.documentElement.classList.contains('dark');
   const [dark, setDark] = useState(read);
   useEffect(() => {
-    const observer = new MutationObserver(() => setDark(read()));
+    let frame = 0;
+    const observer = new MutationObserver(() => {
+      if (!deferred) return setDark(read());
+      cancelAnimationFrame(frame);
+      // Two frames: the first lets the browser paint the new colours, the second runs after it
+      frame = requestAnimationFrame(() => { frame = requestAnimationFrame(() => setDark(read())); });
+    });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [deferred]);
   return dark;
 };
 

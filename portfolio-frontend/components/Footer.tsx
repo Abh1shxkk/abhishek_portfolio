@@ -95,7 +95,6 @@ export const Footer: React.FC = () => {
         <div className="lane mt-10" />
         <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-white/55">
           <span>© {year} {profile?.full_name}</span>
-          <span>Built with React, Three.js and Vite</span>
           <span>{profile?.location}</span>
         </p>
       </div>

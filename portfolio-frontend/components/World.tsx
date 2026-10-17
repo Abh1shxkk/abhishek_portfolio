@@ -1,5 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { useNavigate } from 'react-router-dom';
 import { Accent } from '../types';
 import { JOURNEY, PROJECTS_DATA, SKILLS_GROUPED } from '../data/portfolio';
@@ -75,16 +79,16 @@ const PALETTE = {
     } as Record<Kind, [number, number]>,
   },
   dark: {
-    zenith: 0x050a1c, horizon: 0x1b2746, fog: 0x151f3a,
-    sunColor: 0xc9d6ff, sunDisc: 0xf3f1e6, sunGlow: 0.35, sunI: 0.5,
-    fillColor: 0x6f7fb0, fillI: 0.25, hemiSky: 0x2b3a66, hemiGround: 0x101a10, hemiI: 0.55,
-    ground: 0x1f3a28, field: [0x1b3323, 0x27432d, 0x3d3a22, 0x2c3f24, 0x213a26, 0x2a4428],
+    zenith: 0x0b1636, horizon: 0x33467a, fog: 0x26365e,
+    sunColor: 0xc9d6ff, sunDisc: 0xf3f1e6, sunGlow: 0.55, sunI: 0.9,
+    fillColor: 0x8a9ad0, fillI: 0.5, hemiSky: 0x5068a8, hemiGround: 0x1c2a1c, hemiI: 1.05,
+    ground: 0x26482f, field: [0x1b3323, 0x27432d, 0x3d3a22, 0x2c3f24, 0x213a26, 0x2a4428],
     mountain: 0x1b2742, snow: 0x5a6a8a,
     road: 0x1e2026, dash: 0x9a9a90, kerb: 0x3a3a3c, line: 0xa8a8a0,
     trunk: 0x3a2a1c, leaf: [0x1f4d26, 0x2a5e30, 0x173d1e, 0x3f6b2a, 0x234f28, 0x7a4a1c, 0x6e3418],
     bush: 0x24502a, rock: 0x4a4a48, plot: 0x3a3528, path: 0x34302a, fence: 0x5a4630,
     flower: [0x8a3344, 0x8a7238, 0x8a8a88, 0x5e4a8a],
-    glass: 0xffd27a, glow: 0xffb347, cloud: 0x2a3148, water: 0x1c3f5c, ripple: 0x7fb3d6,
+    glass: 0xffd27a, glow: 0xffb347, cloud: 0x46507a, water: 0x1c3f5c, ripple: 0x7fb3d6,
     car: 0xd7263d, lamp: 0x3a3a40, bulb: 0xfff2c9, heli: [0x8f1f2c, 0x9a958c],
     balloon: [0x8f1f2c, 0xa38c3a, 0x1f6b62],
     kinds: {
@@ -164,7 +168,7 @@ const buildKind = (kind: Kind, p: Palette, dark: boolean) => {
   const trim = mat(trimHex);
   const glass = new THREE.MeshStandardMaterial({
     color: p.glass, flatShading: true, roughness: 0.3, metalness: 0.1,
-    emissive: p.glow, emissiveIntensity: dark ? 0.9 : 0,
+    emissive: p.glow, emissiveIntensity: dark ? 1.8 : 0,
   });
   let height = 2;
   const windows = (xs: number[], ys: number[], z: number, w = 0.4, h = 0.3) =>
@@ -425,7 +429,7 @@ type Tree = {
 // ─── World ───
 
 export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const dark = useDarkMode();
+  const dark = useDarkMode({ deferred: true });
   const navigate = useNavigate();
   const mountRef = useRef<HTMLDivElement>(null);
   const sections = useRef<Partial<Record<DistrictKey, HTMLElement | null>>>({});
@@ -485,7 +489,7 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = dark ? 0.9 : 1.05;
+    renderer.toneMappingExposure = dark ? 1.2 : 1.05;
     renderer.setClearColor(p.fog);
     mount.appendChild(renderer.domElement);
 
@@ -500,10 +504,14 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     let shiftHero = new THREE.Vector3();
     let shiftRoad = new THREE.Vector3();
     const camShift = new THREE.Vector3();
+    // Night glow: lamps, windows, headlights and the moon bloom softly
+    let composer: EffectComposer | null = null;
+    let bloom: UnrealBloomPass | null = null;
     const fit = () => {
       const w = mount.clientWidth;
       const h = mount.clientHeight;
       renderer.setSize(w, h, false);
+      composer?.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       const portrait = w < h;
@@ -517,6 +525,13 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         shiftRoad = shiftHero.clone();
       }
     };
+    if (dark && !small) {
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      bloom = new UnrealBloomPass(new THREE.Vector2(mount.clientWidth, mount.clientHeight), 0.85, 0.55, 0.72);
+      composer.addPass(bloom);
+      composer.addPass(new OutputPass());
+    }
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(mount);
@@ -739,6 +754,10 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     // Street lamps along the road
     const lampMat = mat(p.lamp, 0.6);
     const bulbMat = new THREE.MeshStandardMaterial({ color: p.bulb, emissive: p.bulb, emissiveIntensity: dark ? 2.5 : 0.15, flatShading: true });
+    const haloMat = new THREE.SpriteMaterial({
+      map: glowTexture('rgba(255,236,190,0.9)', 'rgba(255,190,110,0.28)'),
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+    });
     const lampCount = Math.floor(curve.getLength() / 7);
     for (let i = 0; i < lampCount; i++) {
       const t = (i + 0.5) / lampCount;
@@ -749,11 +768,39 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       wrapper.add(box(0.35, 0.05, 0.07, lampMat, 0.15, 1.6, 0));
       wrapper.add(box(0.14, 0.08, 0.1, bulbMat, 0.3, 1.52, 0));
       if (dark && i % 4 === 0) {
-        const l = new THREE.PointLight(0xffd9a0, 4, 6, 2);
+        const l = new THREE.PointLight(0xffd9a0, 6, 7, 2);
         l.position.set(0.3, 1.5, 0);
         wrapper.add(l);
       }
+      if (dark) {
+        const halo = new THREE.Sprite(haloMat);
+        halo.position.set(0.3, 1.5, 0);
+        halo.scale.setScalar(1.6);
+        wrapper.add(halo);
+      }
       scene.add(wrapper);
+    }
+
+    // Fireflies drifting over the fields at night
+    let fireflies: THREE.Points | null = null;
+    const fireflyBase: number[] = [];
+    if (dark) {
+      const n = small ? 70 : 160;
+      const pos = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        const x = -18 + rnd() * 124;
+        const z = -18 + rnd() * 38;
+        const y = 0.35 + rnd() * 1.4;
+        pos.set([x, y, z], i * 3);
+        fireflyBase.push(x, y, z, rnd() * Math.PI * 2);
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      fireflies = new THREE.Points(geo, new THREE.PointsMaterial({
+        color: 0xe6ff8a, size: 0.32, map: glowTexture('rgba(255,255,220,1)', 'rgba(210,255,120,0.45)'),
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+      }));
+      scene.add(fireflies);
     }
 
     const plotMat = mat(p.plot, 1);
@@ -1102,8 +1149,8 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     car.add(box(0.46, 0.18, 0.38, carGlass, -0.04, 0.3));
     car.add(box(0.4, 0.04, 0.4, carPaint, -0.04, 0.48));
     car.add(box(0.06, 0.04, 0.5, carPaint, 0.1, 0.3));
-    const headMat = new THREE.MeshStandardMaterial({ color: 0xfff4d6, emissive: 0xffe6a8, emissiveIntensity: dark ? 2.2 : 0.4, flatShading: true });
-    const tailMat = new THREE.MeshStandardMaterial({ color: 0xff3b3b, emissive: 0xff2222, emissiveIntensity: dark ? 1.8 : 0.3, flatShading: true });
+    const headMat = new THREE.MeshStandardMaterial({ color: 0xfff4d6, emissive: 0xffe6a8, emissiveIntensity: dark ? 4 : 0.4, flatShading: true });
+    const tailMat = new THREE.MeshStandardMaterial({ color: 0xff3b3b, emissive: 0xff2222, emissiveIntensity: dark ? 2.6 : 0.3, flatShading: true });
     [-0.14, 0.14].forEach((z) => {
       car.add(box(0.04, 0.06, 0.08, headMat, 0.41, 0.17, z));
       car.add(box(0.04, 0.05, 0.08, tailMat, -0.41, 0.17, z));
@@ -1121,7 +1168,7 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     });
     scene.add(car);
     if (dark) {
-      const headlight = new THREE.SpotLight(0xffe0b0, 12, 7, 0.55, 0.5, 1.2);
+      const headlight = new THREE.SpotLight(0xffe0b0, 22, 9, 0.6, 0.5, 1.1);
       headlight.position.set(0.4, 0.3, 0);
       headlight.target.position.set(4, -0.5, 0);
       car.add(headlight, headlight.target);
@@ -1244,9 +1291,10 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       const speed = ((t - prevT) * curve.getLength()) / Math.max(dt, 1e-3);
       prevT = t;
       car.position.set(pt.x, 0.04 + Math.abs(Math.sin(now * 18)) * Math.min(0.012, Math.abs(speed) * 0.002), pt.z);
-      car.rotation.y = Math.atan2(tan.x, tan.z) + Math.PI / 2;
-      car.rotation.z = THREE.MathUtils.lerp(car.rotation.z, THREE.MathUtils.clamp(-speed * 0.01, -0.08, 0.08), ease(0.1, dt));
-      wheels.forEach((w) => { w.rotation.y += speed * dt * 10; });
+      // The car model's nose points along +x; this turns +x onto the road's direction of travel
+      car.rotation.y = Math.atan2(tan.x, tan.z) - Math.PI / 2;
+      car.rotation.z = THREE.MathUtils.lerp(car.rotation.z, THREE.MathUtils.clamp(speed * 0.01, -0.08, 0.08), ease(0.1, dt));
+      wheels.forEach((w) => { w.rotation.y -= speed * dt * 10; });
       // The camera eases a little behind the car so corners feel like driving
       camShift.lerpVectors(shiftHero, shiftRoad, THREE.MathUtils.smoothstep(t, 0.045, 0.09));
       // Snap on the first frame so the page never opens mid-flight, then ease behind the car
@@ -1431,7 +1479,22 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         el.style.pointerEvents = on ? 'auto' : 'none';
       });
 
-      renderer.render(scene, camera);
+      if (fireflies && !reduced) {
+        const attr = fireflies.geometry.getAttribute('position') as THREE.BufferAttribute;
+        for (let i = 0; i < attr.count; i++) {
+          const b = i * 4;
+          const ph = fireflyBase[b + 3];
+          attr.setXYZ(i,
+            fireflyBase[b] + Math.sin(now * 0.4 + ph) * 0.8,
+            fireflyBase[b + 1] + Math.sin(now * 1.3 + ph * 2) * 0.25,
+            fireflyBase[b + 2] + Math.cos(now * 0.35 + ph) * 0.8);
+        }
+        attr.needsUpdate = true;
+        (fireflies.material as THREE.PointsMaterial).opacity = 0.75 + Math.sin(now * 3) * 0.2;
+      }
+
+      if (composer) composer.render(dt);
+      else renderer.render(scene, camera);
       if (frameNo === 3 && process.env.NODE_ENV !== 'production') {
         const ndc = tmp.copy(sunGlow.position).project(camera);
         console.log('[world]', JSON.stringify({
@@ -1461,6 +1524,10 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         }
       });
       textures.forEach((tx) => tx.dispose());
+      haloMat.map?.dispose();
+      haloMat.dispose();
+      bloom?.dispose();
+      composer?.dispose();
       renderer.dispose();
       mount.removeChild(renderer.domElement);
     };

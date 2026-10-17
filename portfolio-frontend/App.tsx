@@ -56,10 +56,11 @@ const useTheme = () => {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme]);
 
+  // One click always flips what you see. (Cycling through "system" looked broken whenever
+  // the system theme matched the current one, because that click changed nothing.)
   const cycleTheme = () => {
-    if (theme === 'light') setTheme('dark');
-    else if (theme === 'dark') setTheme('system');
-    else setTheme('light');
+    const showingDark = document.documentElement.classList.contains('dark');
+    setTheme(showingDark ? 'light' : 'dark');
   };
 
   return { theme, cycleTheme };

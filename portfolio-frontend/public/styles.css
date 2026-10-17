@@ -927,3 +927,253 @@ body {
   .stagger > *, .drop-in { animation: none; }
   .nav-pill, .day-night .knob, .polaroid, .card-paper { transition: none; }
 }
+
+/* ============================================
+   GRAFFITI WALL (all projects page)
+   ============================================ */
+
+.wall {
+  position: relative;
+  border-radius: 10px;
+  padding: 56px 22px 64px;
+  background-color: #b4614a;
+  background-image:
+    radial-gradient(38% 30% at 12% 18%, rgb(255 94 160 / 0.38), transparent 70%),
+    radial-gradient(30% 26% at 88% 30%, rgb(0 214 190 / 0.32), transparent 70%),
+    radial-gradient(34% 30% at 70% 82%, rgb(255 214 0 / 0.30), transparent 70%),
+    radial-gradient(28% 24% at 22% 78%, rgb(120 110 255 / 0.30), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='44'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.28' stroke-width='3'%3E%3Cpath d='M0 1.5h88M0 23.5h88M1.5 0v22M45.5 22v22'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  background-blend-mode: normal, normal, normal, normal, multiply, overlay;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25), inset 0 -40px 80px rgb(0 0 0 / 0.25), 0 30px 60px -30px rgb(0 0 0 / 0.6);
+}
+.dark .wall {
+  background-color: #3e2620;
+  background-image:
+    radial-gradient(38% 30% at 12% 18%, rgb(255 60 170 / 0.45), transparent 70%),
+    radial-gradient(30% 26% at 88% 30%, rgb(0 255 220 / 0.35), transparent 70%),
+    radial-gradient(34% 30% at 70% 82%, rgb(255 230 0 / 0.30), transparent 70%),
+    radial-gradient(28% 24% at 22% 78%, rgb(130 110 255 / 0.40), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='44'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.45' stroke-width='3'%3E%3Cpath d='M0 1.5h88M0 23.5h88M1.5 0v22M45.5 22v22'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+}
+
+/* Big faded spray tags in the background of the wall */
+.wall-tag {
+  position: absolute;
+  font-family: "Rubik Spray Paint", "Bungee", Impact, sans-serif;
+  color: rgb(255 255 255 / 0.13);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Spray-painted headline with drips */
+.spray-title {
+  font-family: "Rubik Spray Paint", "Bungee", Impact, sans-serif;
+  color: #fff35c;
+  text-shadow: 0 0 18px rgb(255 243 92 / 0.55), 3px 3px 0 #ff3d8b, 6px 6px 0 rgb(0 0 0 / 0.35);
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+}
+.dark .spray-title { text-shadow: 0 0 28px rgb(255 243 92 / 0.8), 3px 3px 0 #ff3d8b, 6px 6px 0 rgb(0 0 0 / 0.5); }
+.drips { position: relative; display: inline-block; }
+.drips::after {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 8%;
+  top: 92%;
+  height: 34px;
+  background:
+    radial-gradient(4px 18px at 8% 0, #fff35c 98%, transparent) no-repeat,
+    radial-gradient(3px 26px at 23% 0, #fff35c 98%, transparent) no-repeat,
+    radial-gradient(5px 14px at 41% 0, #fff35c 98%, transparent) no-repeat,
+    radial-gradient(3px 30px at 63% 0, #fff35c 98%, transparent) no-repeat,
+    radial-gradient(4px 20px at 82% 0, #fff35c 98%, transparent) no-repeat,
+    radial-gradient(3px 12px at 95% 0, #fff35c 98%, transparent) no-repeat;
+  filter: drop-shadow(2px 2px 0 #ff3d8b);
+  animation: drip 2.4s var(--ease-out) both;
+  transform-origin: top;
+}
+@keyframes drip { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+.marker { font-family: "Permanent Marker", cursive; }
+
+/* Filter chips as slapped-on stickers */
+.slap {
+  position: relative;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: "Bungee", Impact, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: #fffaf0;
+  color: #1c1612;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1.5px rgb(0 0 0 / 0.75), 0 4px 0 rgb(0 0 0 / 0.35);
+  transform: rotate(var(--r, 0deg));
+  transition: transform 0.25s var(--ease-out), background 0.2s ease;
+}
+.slap:hover { transform: rotate(0deg) scale(1.08); }
+.slap.on { background: #ff3d8b; color: #fff; }
+
+/* ── Cards on the wall ── */
+.g-card {
+  position: relative;
+  display: block;
+  transform: rotate(var(--tilt, 0deg)) translateY(var(--dy, 0px));
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+  filter: drop-shadow(0 14px 18px rgb(0 0 0 / 0.35));
+  z-index: 1;
+}
+.g-card:hover {
+  transform: rotate(0deg) translateY(calc(var(--dy, 0px) - 8px)) scale(1.03);
+  filter: drop-shadow(0 26px 28px rgb(0 0 0 / 0.45));
+  z-index: 5;
+}
+.g-shot { overflow: hidden; background: #e9e3d6; }
+.g-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 1.2s var(--ease-out); }
+.g-card:hover .g-shot img { transform: scale(1.06); }
+
+/* 1. Wheat-paste poster with a torn bottom edge */
+.g-poster {
+  background: #f5efdf;
+  background-image: linear-gradient(115deg, rgb(255 255 255 / 0.5), transparent 30%, rgb(0 0 0 / 0.05) 55%, transparent 70%, rgb(255 255 255 / 0.35));
+  color: #1c1612;
+  padding: 12px 12px 30px;
+  clip-path: polygon(0 0, 100% 0, 100% 96%, 94% 99%, 87% 95%, 79% 100%, 70% 96%, 61% 99%, 52% 95%, 44% 100%, 35% 96%, 26% 99%, 17% 95%, 8% 99%, 0 96%);
+}
+
+/* 2. Die-cut sticker with a thick white border and a peeling corner */
+.g-sticker {
+  position: relative;
+  background: var(--fill, #ff3d8b);
+  color: #fff;
+  padding: 12px;
+  border-radius: 22px;
+  box-shadow: 0 0 0 7px #fff, 0 0 0 9px rgb(0 0 0 / 0.18);
+  margin: 9px;
+}
+.g-sticker .g-shot { border-radius: 12px; border: 3px solid rgb(0 0 0 / 0.85); }
+.g-sticker::after {
+  content: "";
+  position: absolute;
+  right: -9px;
+  bottom: -9px;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(315deg, transparent 50%, #f1ede4 50%, #fff 70%);
+  border-radius: 0 0 22px 0;
+  transform-origin: bottom right;
+  transition: transform 0.35s var(--ease-out);
+  transform: scale(0);
+  filter: drop-shadow(-2px -2px 3px rgb(0 0 0 / 0.2));
+}
+.g-card:hover .g-sticker::after { transform: scale(1); }
+
+/* 3. Black spray-stencil card with a neon title */
+.g-stencil {
+  background: #17161b;
+  color: #f2f2f2;
+  padding: 14px;
+  border-radius: 4px;
+  outline: 3px dashed rgb(255 255 255 / 0.22);
+  outline-offset: -9px;
+}
+.g-stencil h2 {
+  font-family: "Rubik Spray Paint", "Bungee", Impact, sans-serif;
+  color: var(--neon, #39ff88);
+  text-shadow: 0 0 14px var(--neon, #39ff88);
+}
+
+/* 4. Polaroid with a marker caption */
+.g-polaroid {
+  background: #fff;
+  color: #1c1612;
+  padding: 11px 11px 18px;
+  border-radius: 2px;
+}
+.g-polaroid h2 { font-family: "Permanent Marker", cursive; font-weight: 400; }
+
+/* Bits slapped on top */
+.g-tape {
+  position: absolute;
+  top: -12px;
+  width: 96px;
+  height: 26px;
+  background: rgb(255 243 170 / 0.8);
+  background-image: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.25) 0 2px, transparent 2px 6px);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  z-index: 3;
+}
+.g-pin {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ff8aa8, #e01e5a 60%, #8a0f33);
+  box-shadow: 0 3px 4px rgb(0 0 0 / 0.4);
+  z-index: 3;
+}
+.g-live {
+  position: absolute;
+  top: -14px;
+  right: -12px;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #39ff88;
+  color: #0c2a17;
+  font-family: "Bungee", Impact, sans-serif;
+  font-size: 12px;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 0 rgb(0 0 0 / 0.3);
+  transform: rotate(14deg);
+  z-index: 4;
+  animation: live-bob 2.6s ease-in-out infinite;
+}
+@keyframes live-bob { 0%, 100% { transform: rotate(14deg) scale(1); } 50% { transform: rotate(8deg) scale(1.08); } }
+.g-crown {
+  position: absolute;
+  top: -30px;
+  left: -10px;
+  width: 64px;
+  transform: rotate(-16deg);
+  z-index: 4;
+  filter: drop-shadow(0 0 6px rgb(255 214 0 / 0.7));
+}
+.g-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: "Bungee", Impact, sans-serif;
+  font-size: 9.5px;
+  text-transform: uppercase;
+  background: #1c1612;
+  color: #fff;
+  transform: rotate(-2deg);
+}
+.g-sticker .g-chip { background: #fff; color: #1c1612; }
+.g-stencil .g-chip { background: var(--neon, #39ff88); color: #0d0d10; }
+
+.g-doodle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 6;
+  font-family: "Permanent Marker", cursive;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgb(0 0 0 / 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-live, .drips::after { animation: none; }
+  .g-card, .g-card:hover { transition: none; }
+}
