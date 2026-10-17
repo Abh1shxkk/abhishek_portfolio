@@ -91,7 +91,7 @@ export const SERVICES: Service[] = [
     price: `From ${inr(8999)}`,
     summary: 'Fast, mobile-first websites for local businesses and professionals, with enquiries going straight to WhatsApp or email.',
     includes: ['Fixed-price packages', 'Domain, hosting and SSL sorted', 'Google Maps and basic search setup'],
-    proof: [17, 10, 6],
+    proof: [21, 20, 23, 17],
   },
   {
     id: 'laravel-apps',
@@ -147,7 +147,7 @@ export const SERVICES: Service[] = [
     price: 'Quoted to scope',
     summary: 'A fresh, faster version of an existing site, or ongoing updates, fixes, backups and security once it is live.',
     includes: ['Speed and mobile fixes', 'Content and feature updates', 'Backups, renewals and monitoring'],
-    proof: [6, 9],
+    proof: [22, 6, 9],
   },
 ];
 

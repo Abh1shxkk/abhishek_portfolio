@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Accent } from '../types';
 
 const prefersReducedMotion = () =>
@@ -17,9 +17,17 @@ export const useInView = <T extends Element>(rootMargin = '0px 0px -10% 0px') =>
   const ref = useRef<T | null>(null);
   const [inView, setInView] = useState(false);
 
-  useEffect(() => {
+  // Layout effect: decide before the first paint, so on-screen content never flashes invisible
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Already on screen when the page opens, or no IntersectionObserver: show it straight away.
+    // Waiting for an observer callback left content blurred and invisible on some browsers.
+    const r = el.getBoundingClientRect();
+    if (typeof IntersectionObserver === 'undefined' || (r.top < window.innerHeight && r.bottom > 0)) {
+      setInView(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
