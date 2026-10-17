@@ -1,15 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Accent, SectionId, Skill } from '../types';
+import { SectionId, Skill } from '../types';
 import { useProfile } from '../hooks/usePortfolio';
 import { resumeService } from '../services/portfolioService';
 import { EXPERIENCE_DATA, JOURNEY, PROJECTS_DATA, SKILLS_DATA, SKILL_GROUP_NOTES } from '../data/portfolio';
 import { DistrictKey, FEATURED, SKILL_GROUPS, useWorld } from './World';
 import { CountUp, Icon, Magnetic, SlipArrow, Spotlight, useCopy, useDarkMode, useLocalTime } from './ui';
-
-/** Each project takes the colour of the journey stop it was built at. */
-export const projectAccent = (id: number): Accent =>
-  JOURNEY.find((m) => m.projectIds.includes(id))?.accent ?? 'saffron';
 
 const projectById = new Map(PROJECTS_DATA.map((p) => [p.id, p]));
 

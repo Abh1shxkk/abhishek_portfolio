@@ -71,27 +71,6 @@ export const useCopy = (resetAfter = 1800) => {
 export const glow = (accent: Accent): React.CSSProperties =>
   ({ '--glow': `var(--${accent})` } as React.CSSProperties);
 
-export const accentText: Record<Accent, string> = {
-  saffron: 'text-saffron',
-  amber: 'text-amber',
-  coral: 'text-coral',
-  rose: 'text-rose',
-};
-
-export const accentBg: Record<Accent, string> = {
-  saffron: 'bg-saffron',
-  amber: 'bg-amber',
-  coral: 'bg-coral',
-  rose: 'bg-rose',
-};
-
-export const accentChip: Record<Accent, string> = {
-  saffron: 'bg-saffron/10 text-saffron ring-saffron/25',
-  amber: 'bg-amber/10 text-amber ring-amber/25',
-  coral: 'bg-coral/10 text-coral ring-coral/25',
-  rose: 'bg-rose/10 text-rose ring-rose/25',
-};
-
 // ─── Components ───
 
 interface RevealProps {
@@ -275,18 +254,6 @@ export const ScrollProgress: React.FC = () => {
   );
 };
 
-/** Small mono eyebrow label used above section headings. */
-export const Eyebrow: React.FC<{ children: React.ReactNode; accent?: Accent; className?: string }> = ({
-  children,
-  accent = 'saffron',
-  className = '',
-}) => (
-  <div className={`inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted ${className}`}>
-    <span className={`h-1.5 w-1.5 rounded-full ${accentBg[accent]}`} />
-    {children}
-  </div>
-);
-
 // ─── Icons ───
 
 type IconProps = { size?: number; className?: string };
@@ -307,17 +274,12 @@ export const Icon = {
   Mail: ({ size = 16, className }: IconProps) => stroke(size, className, <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></>),
   Copy: ({ size = 16, className }: IconProps) => stroke(size, className, <><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></>),
   Check: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="m5 12 5 5L20 7" />),
-  Pin: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z" /><circle cx="12" cy="9" r="2.5" /></>),
   Sun: ({ size = 16, className }: IconProps) => stroke(size, className, <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>),
   Moon: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />),
-  Monitor: ({ size = 16, className }: IconProps) => stroke(size, className, <><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></>),
   Menu: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M4 8h16M4 16h16" />),
   Close: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M6 6l12 12M18 6 6 18" />),
-  Sparkle: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18" />),
   Globe: ({ size = 16, className }: IconProps) => stroke(size, className, <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></>),
-  Phone: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />),
   Smartphone: ({ size = 16, className }: IconProps) => stroke(size, className, <><rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" /></>),
-  Clock: ({ size = 16, className }: IconProps) => stroke(size, className, <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>),
   Chat: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />),
   Send: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4z" /></>),
   Github: ({ size = 16, className }: IconProps) => (
@@ -357,12 +319,3 @@ export const useDarkMode = () => {
   return dark;
 };
 
-/** A bento tile: bordered block that lifts a touch on hover. */
-export const Tile: React.FC<React.HTMLAttributes<HTMLDivElement> & { interactive?: boolean }> = ({ className = '', interactive = true, children, ...rest }) => (
-  <div
-    className={`relative overflow-hidden rounded-lg border border-line bg-surface ${interactive ? 'transition-all duration-300 hover:-translate-y-0.5 hover:border-ink/25 hover:shadow-soft' : ''} ${className}`}
-    {...rest}
-  >
-    {children}
-  </div>
-);

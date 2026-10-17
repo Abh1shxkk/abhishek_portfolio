@@ -97,14 +97,6 @@ body {
 }
 .dark .grain::after { opacity: 0.05; }
 
-.text-gradient {
-  background: var(--grad);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 /* ============================================
    SCROLL REVEAL
    ============================================ */
@@ -201,21 +193,6 @@ body {
 /* Button press */
 .press { transition: transform 0.2s var(--ease-out); }
 .press:active { transform: scale(0.97); }
-
-/* Shine sweep across primary buttons */
-.shine { position: relative; overflow: hidden; }
-.shine::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -60%;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.35), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.7s var(--ease-out);
-}
-.shine:hover::after { left: 130%; }
 
 /* Theme icon spin-in */
 .spin-in { animation: spin-in 0.5s var(--ease-out); }
@@ -516,10 +493,6 @@ body {
     0 9px 0 rgb(var(--ex) / 0.9), 0 16px 22px rgb(0 0 0 / 0.4);
 }
 
-.font-shade {
-  font-family: "Bungee Shade", "Bungee", Impact, sans-serif;
-}
-
 /* Sign-style buttons */
 .btn-sign {
   --b: var(--sign-green);
@@ -672,8 +645,6 @@ body {
 }
 .plate-green { --sign: var(--sign-green); }
 .plate-blue { --sign: var(--sign-blue); }
-.plate-red { --sign: var(--sign-red); }
-.plate-brown { --sign: var(--sign-brown); }
 /* License plate for the brand */
 .plate-licence {
   color: rgb(var(--sign-blue));
@@ -944,10 +915,6 @@ body {
 .prose-paper .hljs-title, .prose-paper .hljs-function { color: #82aaff; }
 .prose-paper .hljs-attr, .prose-paper .hljs-tag, .prose-paper .hljs-name { color: #f07178; }
 .prose-paper .hljs-built_in, .prose-paper .hljs-type { color: #ffcb6b; }
-
-/* Scrollbar hide utility */
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-.scrollbar-hide::-webkit-scrollbar { display: none; }
 
 /* ============================================
    REDUCED MOTION
