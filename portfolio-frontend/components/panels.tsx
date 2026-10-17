@@ -133,8 +133,8 @@ export const HeroPanel: React.FC = () => {
   ].filter((s) => s.href);
 
   const stats = [
-    { value: `${profile?.years_of_experience ?? 1}`, label: 'yrs in production' },
     { value: `${PROJECTS_DATA.length}`, label: 'projects shipped' },
+    { value: `${PROJECTS_DATA.filter((p) => p.website_url).length}`, label: 'live in production' },
     { value: '100+', label: 'colleges on the ERP' },
     { value: `${SKILLS_DATA.length}`, label: 'tools in the stack' },
   ];
@@ -166,7 +166,7 @@ export const HeroPanel: React.FC = () => {
                 <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink/70">
                   <span className="inline-flex items-center gap-1.5">
                     <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[rgb(var(--sign-green))]" />
-                    {profile?.availability_status === 'available' ? 'Open to work · immediate joiner' : 'Busy right now'}
+                    {profile?.availability_status === 'available' ? 'Taking freelance projects' : 'Busy right now'}
                   </span>
                   {profile?.languages && <span className="inline-flex items-center gap-1"><Icon.Globe size={12} /> {profile.languages.join(' · ')}</span>}
                 </p>

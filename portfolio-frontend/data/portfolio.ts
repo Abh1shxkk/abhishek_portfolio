@@ -31,7 +31,7 @@ export const PROFILE_DATA: Profile = {
   experience_label: '1.5 years',
   availability_status: 'available',
   languages: ['Hindi', 'English'],
-  open_to: ['Full-time', 'Contract', 'Freelance'],
+  open_to: ['Freelance projects', 'Contract work'],
 };
 
 // ─── EXPERIENCE DATA ───

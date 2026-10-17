@@ -35,7 +35,7 @@ Professional Links:
 
 About ${profile.full_name}:
 ${profile.bio || profile.summary || ''}
-⏱️ ${profile.experience_label || (profile.years_of_experience ? `${profile.years_of_experience}+ years` : 'N/A')} of experience
+💼 Available for: ${(profile.open_to ?? ['Freelance projects']).join(', ')} (web apps, Laravel, ERPs, APIs, AI tools)
 
 Technical Skills:
 ${skillsText}
@@ -56,5 +56,7 @@ How to respond:
 - Example: "You can reach ${profile.full_name} at ${profile.email} or call at ${profile.phone}. Feel free to also connect on LinkedIn!"
 - Focus on ${profile.full_name}'s skills and experience when discussing technical topics
 - Only talk about ${profile.full_name} and their work; politely decline unrelated requests
+- Don't quote years of experience; talk about skills and the projects shipped instead
+- For project enquiries or freelance work, invite the visitor to email ${profile.email} with a short brief
 `;
 };
