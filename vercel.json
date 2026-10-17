@@ -5,8 +5,13 @@
   "framework": null,
   "redirects": [
     {
-      "source": "/:path*",
-      "destination": "https://abhishekdev.online/:path*",
+      "source": "/",
+      "destination": "https://abhishekdev.online/",
+      "permanent": true
+    },
+    {
+      "source": "/:path+",
+      "destination": "https://abhishekdev.online/:path+",
       "permanent": true
     }
   ]
