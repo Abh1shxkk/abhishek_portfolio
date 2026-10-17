@@ -46,6 +46,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Find pages that changed (IndexNow)
+        if: github.ref_name == 'main'
+        continue-on-error: true
+        run: node scripts/indexnow.mjs diff
+
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
@@ -54,3 +59,8 @@ jobs:
           workingDirectory: portfolio-frontend
           command: pages deploy --branch=${{ github.ref_name }} --commit-hash=${{ github.sha }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tell Bing about changed pages (IndexNow)
+        if: github.ref_name == 'main'
+        continue-on-error: true
+        run: node scripts/indexnow.mjs submit

@@ -43,6 +43,18 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
     },
     plugins: [react(), devApi(env), seo()],
+    build: {
+      rollupOptions: {
+        output: {
+          // Libraries that rarely change get their own long-cached files, so a site update
+          // only re-downloads the small app chunk
+          manualChunks: {
+            three: ['three', 'three/examples/jsm/postprocessing/EffectComposer.js'],
+            react: ['react', 'react-dom', 'react-router-dom'],
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

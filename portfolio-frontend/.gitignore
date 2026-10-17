@@ -28,3 +28,6 @@ heroku.yml
 # Cloudflare / Wrangler
 .wrangler
 .dev.vars
+
+# IndexNow scratch file
+.indexnow-changed.json

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from './components/Header';
 import { World } from './components/World';
@@ -6,8 +6,9 @@ import { ContactPanel, HeroPanel, JourneyPanel, ProjectsPanel, SkillsPanel } fro
 import { Footer } from './components/Footer';
 import { ScrollProgress, scrollBehavior } from './components/ui';
 import { AIChat } from './components/AIChat';
-import { BlogList } from './components/BlogList';
-import { BlogPostPage } from './components/BlogPost';
+// The blog (with its Markdown and syntax-highlighting libraries) loads only when someone opens it
+const BlogList = lazy(() => import('./components/BlogList').then((m) => ({ default: m.BlogList })));
+const BlogPostPage = lazy(() => import('./components/BlogPost').then((m) => ({ default: m.BlogPostPage })));
 import { ProjectsList } from './components/ProjectsList';
 import { AboutPage, MeerutPage, ServicesPage } from './components/ServicePages';
 import { ProjectDetailPage } from './components/ProjectDetail';
@@ -161,7 +162,7 @@ const AppContent: React.FC = () => {
         path="/blog"
         element={
           <ContentLayout theme={theme} onToggleTheme={cycleTheme} activeNav="blog">
-            <BlogList />
+            <Suspense fallback={null}><BlogList /></Suspense>
           </ContentLayout>
         }
       />
@@ -169,7 +170,7 @@ const AppContent: React.FC = () => {
         path="/blog/:slug"
         element={
           <ContentLayout theme={theme} onToggleTheme={cycleTheme} activeNav="blog">
-            <BlogPostPage />
+            <Suspense fallback={null}><BlogPostPage /></Suspense>
           </ContentLayout>
         }
       />
