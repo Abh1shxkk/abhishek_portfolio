@@ -8,7 +8,7 @@ export const PROFILE_DATA: Profile = {
   id: 1,
   full_name: 'Abhishek Chauhan',
   title: 'Full Stack Developer',
-  tagline: 'I build whatever the job needs: web platforms, ERPs, REST APIs, mobile apps and AI tools, and keep them running in production.',
+  tagline: 'I build web apps, ERPs, APIs and AI tools for businesses, and keep them running in production.',
   bio: 'PHP and Full Stack Developer at Subharti University, building Laravel, Node.js and React systems, ERPs and AI-assisted tools that run in production.',
   summary:
     'Computer Science graduate (B.Tech, IIMT University, 2025) and Full Stack Developer working on production systems since 2025. ' +
@@ -579,7 +579,7 @@ export const JOURNEY: Milestone[] = [
     title: 'University IT team',
     place: 'Subharti University, Meerut',
     period: 'Jul 2026 – present',
-    role: 'Junior PHP Developer',
+    role: 'PHP Developer, IT Department',
     detail: 'The ERP that 100+ affiliated colleges run on, and the websites that go with it.',
     bullets: [
       'Maintain the central ERP used across the university and its 100+ affiliated colleges',
@@ -740,3 +740,30 @@ export const SKILL_GROUP_NOTES: Record<string, string> = {
 // Add blog posts here when ready
 export const BLOG_DATA: BlogPost[] = [];
 export const BLOG_CATEGORIES: string[] = [];
+
+// ─── Public-facing helpers ───
+
+/**
+ * Job titles as shown on the site (to clients), without the employer's seniority prefix.
+ * The résumé PDF keeps the exact official title from EXPERIENCE_DATA, because employers verify it.
+ */
+export const publicTitle = (title: string) => title.replace(/^(Junior|Trainee|Associate)\s+/i, '');
+
+/** "Start a project" link: an email with a short brief to fill in. */
+export const projectEnquiryHref = (email: string) =>
+  `mailto:${email}?subject=${encodeURIComponent('Project enquiry from abhishekdev.online')}&body=${encodeURIComponent(
+    [
+      'Hi Abhishek,',
+      '',
+      'What I need built:',
+      '',
+      'Who it is for:',
+      '',
+      'Budget range:',
+      '',
+      'Timeline:',
+      '',
+      'Anything I already have (designs, existing site, docs):',
+      '',
+    ].join('\n')
+  )}`;

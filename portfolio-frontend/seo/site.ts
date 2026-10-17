@@ -9,7 +9,7 @@
  *
  * Keep this file free of browser-only code: it runs in Node during the build.
  */
-import { BLOG_DATA, EDUCATION_DATA, EXPERIENCE_DATA, PROFILE_DATA, PROJECTS_DATA, SKILLS_GROUPED } from '../data/portfolio';
+import { BLOG_DATA, EDUCATION_DATA, EXPERIENCE_DATA, PROFILE_DATA, PROJECTS_DATA, SKILLS_GROUPED, publicTitle } from '../data/portfolio';
 import type { Project } from '../types';
 
 export const SITE = 'https://abhishekdev.online';
@@ -305,7 +305,7 @@ export const pageBody = (pathname: string): string => {
       `<header><h1>${esc(NAME)}: ${esc(PROFILE_DATA.title)} in Meerut, Uttar Pradesh</h1><p>${esc(PROFILE_DATA.tagline ?? PROFILE_DATA.bio)}</p></header>`,
       `<section><h2>About</h2><p>${esc(PROFILE_DATA.summary)}</p></section>`,
       `<section><h2>Experience</h2><ul>${EXPERIENCE_DATA.map(
-        (e) => `<li><strong>${esc(e.position)}</strong>, ${esc(e.company)}${e.location ? ` (${esc(e.location)})` : ''}. ${esc(e.description)}</li>`
+        (e) => `<li><strong>${esc(publicTitle(e.position))}</strong>, ${esc(e.company)}${e.location ? ` (${esc(e.location)})` : ''}. ${esc(e.description)}</li>`
       ).join('')}</ul></section>`,
       `<section><h2>Skills</h2><ul>${Object.entries(SKILLS_GROUPED)
         .map(([group, skills]) => `<li><strong>${esc(group)}:</strong> ${skills.map((s) => esc(s.name)).join(', ')}</li>`)

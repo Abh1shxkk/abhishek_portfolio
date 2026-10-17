@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { SectionId, Skill } from '../types';
 import { useProfile } from '../hooks/usePortfolio';
 import { resumeService } from '../services/portfolioService';
-import { EXPERIENCE_DATA, JOURNEY, PROJECTS_DATA, SKILLS_DATA, SKILL_GROUP_NOTES } from '../data/portfolio';
+import { EXPERIENCE_DATA, JOURNEY, PROJECTS_DATA, SKILLS_DATA, SKILL_GROUP_NOTES, projectEnquiryHref } from '../data/portfolio';
 import { DistrictKey, FEATURED, SKILL_GROUPS, useWorld } from './World';
 import { CountUp, Icon, Magnetic, SlipArrow, Spotlight, useCopy, useDarkMode, useLocalTime } from './ui';
 
@@ -161,7 +161,7 @@ export const HeroPanel: React.FC = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[15px] leading-snug text-ink">
-                  {job?.position} at <span className="font-semibold">{job?.company}</span>. {profile?.tagline}
+                  {profile?.tagline} Right now that includes the systems a university and its 100+ colleges run on, at <span className="font-semibold">{job?.company}</span>.
                 </p>
                 <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink/70">
                   <span className="inline-flex items-center gap-1.5">
@@ -179,10 +179,10 @@ export const HeroPanel: React.FC = () => {
                   Start driving <Icon.ArrowDown size={14} />
                 </button>
               </Magnetic>
-              {profile?.resume_url && (
-                <button onClick={() => resumeService.download()} className="btn-paper press inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium">
-                  <Icon.Download size={14} /> Resume
-                </button>
+              {profile?.email && (
+                <a href={projectEnquiryHref(profile.email)} className="btn-paper press inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium">
+                  <Icon.Mail size={14} /> Start a project
+                </a>
               )}
               {profile?.email && (
                 <button onClick={() => copy(profile.email)} className="press inline-flex items-center gap-2 rounded-md px-2 py-2.5 text-sm text-ink/70 hover:text-ink" aria-label="Copy email">

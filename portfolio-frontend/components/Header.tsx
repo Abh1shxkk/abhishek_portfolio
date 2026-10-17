@@ -2,8 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SectionId, Theme } from '../types';
 import { useProfile } from '../hooks/usePortfolio';
-import { resumeService } from '../services/portfolioService';
-import { BLOG_DATA } from '../data/portfolio';
+import { BLOG_DATA, projectEnquiryHref } from '../data/portfolio';
 import { Icon, scrollBehavior, useDarkMode } from './ui';
 
 interface HeaderProps {
@@ -169,13 +168,14 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, theme, onToggleTh
           ))}
         </nav>
         <div className="mt-2 grid grid-cols-2 gap-2 border-t border-ink/15 pt-3">
-          {profile?.resume_url && (
-            <button
-              onClick={() => { resumeService.download(); setIsMenuOpen(false); }}
+          {profile?.email && (
+            <a
+              href={projectEnquiryHref(profile.email)}
+              onClick={() => setIsMenuOpen(false)}
               className="btn-paper press flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-medium"
             >
-              <Icon.Download size={16} /> Resume
-            </button>
+              <Icon.Mail size={16} /> Start a project
+            </a>
           )}
           <button
             onClick={() => go({ id: 'contact', label: 'Contact', section: SectionId.Contact })}

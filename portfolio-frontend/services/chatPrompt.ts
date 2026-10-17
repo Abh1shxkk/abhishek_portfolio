@@ -4,6 +4,7 @@ import {
   EDUCATION_DATA,
   PROJECTS_DATA,
   SKILLS_GROUPED,
+  publicTitle,
 } from '../data/portfolio';
 
 // System prompt for the portfolio chat. Used by the server-side /api/chat function,
@@ -41,7 +42,7 @@ Technical Skills:
 ${skillsText}
 
 Work Experience:
-${experiences.map(e => `• ${e.position} at ${e.company} (${e.start_date} - ${e.end_date || 'Present'})\n  ${e.description || ''}\n  Technologies: ${e.technologies?.join(', ') || 'N/A'}`).join('\n\n')}
+${experiences.map(e => `• ${publicTitle(e.position)} at ${e.company} (${e.start_date} - ${e.end_date || 'Present'})\n  ${e.description || ''}\n  Technologies: ${e.technologies?.join(', ') || 'N/A'}`).join('\n\n')}
 
 Featured Projects:
 ${projects.slice(0, 5).map(p => `• ${p.title} - ${p.description || ''}\n  Tech: ${p.technologies?.join(', ') || 'N/A'}`).join('\n\n')}
