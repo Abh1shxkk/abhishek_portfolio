@@ -3,10 +3,11 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "source": "/:path*",
+      "destination": "https://abhishekdev.online/:path*",
+      "permanent": true
     }
   ]
 }

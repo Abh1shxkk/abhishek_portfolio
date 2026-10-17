@@ -83,7 +83,7 @@ web-standard `fetch`, `Request` and `Response`. Thin adapters run it on each pla
 | Where | File |
 |---|---|
 | Cloudflare Pages | [`portfolio-frontend/functions/api/chat.ts`](portfolio-frontend/functions/api/chat.ts) |
-| Vercel (still works: import the repo with the root at the repository root) | [`api/chat.ts`](api/chat.ts) |
+| Vercel (unused: the old Vercel project now redirects every URL to abhishekdev.online through `vercel.json`) | [`api/chat.ts`](api/chat.ts) |
 | `npm run dev` | the `devApi` plugin in [`vite.config.ts`](portfolio-frontend/vite.config.ts) |
 
 ## How the 3D world is kept fast

@@ -3,10 +3,11 @@
   "buildCommand": "npm run build --prefix portfolio-frontend",
   "outputDirectory": "portfolio-frontend/dist",
   "framework": null,
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "source": "/:path*",
+      "destination": "https://abhishekdev.online/:path*",
+      "permanent": true
     }
   ]
 }
