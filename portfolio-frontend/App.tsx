@@ -4,12 +4,13 @@ import { Header } from './components/Header';
 import { World } from './components/World';
 import { ContactPanel, HeroPanel, JourneyPanel, ProjectsPanel, SkillsPanel } from './components/panels';
 import { Footer } from './components/Footer';
-import { ScrollProgress } from './components/ui';
+import { ScrollProgress, scrollBehavior } from './components/ui';
 import { AIChat } from './components/AIChat';
 import { BlogList } from './components/BlogList';
 import { BlogPostPage } from './components/BlogPost';
 import { ProjectsList } from './components/ProjectsList';
 import { ProjectDetailPage } from './components/ProjectDetail';
+import { PageSky } from './components/PageSky';
 import { SectionId, Theme } from './types';
 import { useProfile } from './hooks/usePortfolio';
 
@@ -74,7 +75,7 @@ const PortfolioHome: React.FC<{ activeSection: string; setActiveSection: (s: str
   // Links such as /#story from other pages land on the right section
   useEffect(() => {
     if (!hash) return;
-    const t = setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth' }), 80);
+    const t = setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: scrollBehavior() }), 80);
     return () => clearTimeout(t);
   }, [hash]);
 
@@ -117,25 +118,27 @@ const PortfolioHome: React.FC<{ activeSection: string; setActiveSection: (s: str
           <ProjectsPanel />
           <ContactPanel />
         </main>
-        <div className="bg-paper/85 backdrop-blur">
-          <Footer />
-        </div>
+        <Footer />
       </World>
       <AIChat />
     </div>
   );
 };
 
-// Content Layout Wrapper (includes Header + Footer)
+// Content Layout Wrapper (includes Header + Footer) over the flat countryside backdrop
 const ContentLayout: React.FC<{ children: React.ReactNode; theme: Theme; onToggleTheme: () => void; activeNav: string }> = ({
   children, theme, onToggleTheme, activeNav
 }) => {
   return (
     <div className="grain bg-paper min-h-screen">
       <ScrollProgress />
+      <PageSky />
       <Header activeSection={activeNav} theme={theme} onToggleTheme={onToggleTheme} />
-      {children}
-      <Footer />
+      <div className="relative z-[1]">
+        {children}
+        <Footer />
+      </div>
+      <AIChat />
     </div>
   );
 };

@@ -4,13 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Abhishek Chauhan, Full Stack Developer building Laravel, Node.js, React and AI-assisted systems that run in production." />
+  <meta name="description" content="Abhishek Chauhan, Full Stack Developer in Meerut. Laravel, React and AI-assisted tools that run in production for a university, its hospital and 100+ colleges. A 3D drive through the work." />
+  <meta name="theme-color" content="#1f7a3f" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>Abhishek Chauhan | Portfolio</title>
   <script>
     // Apply the saved theme before first paint so the page never flashes the wrong colours
     (function () {
       try {
+        // ?theme=light|dark|system picks a theme for this visit (handy for sharing and testing)
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'system') localStorage.setItem('theme', q);
         var t = localStorage.getItem('theme') || 'system';
         var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.classList.add(dark ? 'dark' : 'light');

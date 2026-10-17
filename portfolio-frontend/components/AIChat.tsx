@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createChatSession } from '../services/gemini';
 import { ChatMessage } from '../types';
-import { Chat } from "@google/genai";
+import { Chat } from '@google/genai';
 import { useProfile } from '../hooks/usePortfolio';
+import { Icon } from './ui';
 
+/** A CB radio in the corner: ask the assistant anything about the driver. */
 export const AIChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: profile } = useProfile();
@@ -12,30 +14,24 @@ export const AIChat: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [chatSession, setChatSession] = useState<Chat | null>(null);
+  const [offline, setOffline] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Update initial message when profile loads
   useEffect(() => {
     if (profile?.full_name && messages.length === 0) {
       setMessages([
-        { role: 'model', text: `Hi there! I'm ${profile.full_name}'s AI assistant. How can I help you learn more about ${firstName} today?` }
+        { role: 'model', text: `Hi! I'm ${firstName}'s road assistant. Ask me about the projects, the stack, or how to get in touch.` },
       ]);
     }
-  }, [profile, firstName]);
+  }, [profile, firstName, messages.length]);
 
   useEffect(() => {
-    if (isOpen && !chatSession) {
-      createChatSession().then(session => {
-        if (session) {
-          setChatSession(session);
-        } else {
-          console.error('Failed to create chat session');
-        }
-      }).catch(error => {
-        console.error('Error creating chat session:', error);
-      });
+    if (isOpen && !chatSession && !offline) {
+      createChatSession()
+        .then((session) => (session ? setChatSession(session) : setOffline(true)))
+        .catch(() => setOffline(true));
     }
-  }, [isOpen, chatSession]);
+  }, [isOpen, chatSession, offline]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -44,24 +40,21 @@ export const AIChat: React.FC = () => {
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!input.trim()) return;
-    
     if (!chatSession) {
-      console.error('Chat session not initialized');
-      setMessages(prev => [...prev, { role: 'model', text: "Chat is still initializing. Please wait a moment and try again." }]);
+      setMessages((prev) => [...prev, { role: 'model', text: offline
+        ? `The radio is off right now. Email ${profile?.email ?? 'me'} instead and I'll reply quickly.`
+        : 'Tuning in… give it a second and try again.' }]);
       return;
     }
-
     const userText = input;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userText }]);
+    setMessages((prev) => [...prev, { role: 'user', text: userText }]);
     setIsLoading(true);
-
     try {
       const result = await chatSession.sendMessage({ message: userText });
-      setMessages(prev => [...prev, { role: 'model', text: result.text || "I'm speechless." }]);
-    } catch (error) {
-      console.error("Gemini Error:", error);
-      setMessages(prev => [...prev, { role: 'model', text: "Connection lost. Please try again." }]);
+      setMessages((prev) => [...prev, { role: 'model', text: result.text || "I'm speechless." }]);
+    } catch {
+      setMessages((prev) => [...prev, { role: 'model', text: 'Lost the signal. Please try again.' }]);
     } finally {
       setIsLoading(false);
     }
@@ -69,40 +62,32 @@ export const AIChat: React.FC = () => {
 
   return (
     <>
-      {/* Floating Trigger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`press fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex items-center justify-center w-14 h-14 rounded-lg bg-ink text-paper shadow-lift transition-transform duration-300 ${isOpen ? 'rotate-45' : 'hover:scale-105 hover:-rotate-6'}`}
-        aria-label="Toggle AI Chat"
+        className={`radio-btn press fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-md transition-transform duration-300 md:bottom-8 md:right-8 ${isOpen ? 'rotate-45' : 'hover:scale-105 hover:-rotate-6'}`}
+        aria-label="Toggle AI chat"
       >
-        {isOpen ? (
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        ) : (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-          </svg>
-        )}
+        {isOpen ? <Icon.Close size={22} /> : <Icon.Chat size={24} />}
       </button>
 
-      {/* Chat Window */}
       {isOpen && (
-        <div className="pop-in fixed bottom-24 right-4 md:right-8 z-40 w-[calc(100vw-2rem)] sm:w-96 overflow-hidden rounded-lg bg-surface/95 backdrop-blur-xl border border-line shadow-lift flex flex-col max-h-[520px]">
-          <div className="px-5 py-4 border-b border-line flex justify-between items-center">
-            <span className="text-sm font-semibold tracking-tight text-ink">
-              Ask about {firstName}
+        <div className="card-paper pop-in fixed bottom-24 right-4 z-40 flex max-h-[540px] w-[calc(100vw-2rem)] flex-col sm:w-96 md:right-8">
+          <span className="tape" />
+          <header className="sign sign-green">
+            <h2 className="sign-title">CB radio</h2>
+            <span className="sign-meta inline-flex items-center gap-1.5">
+              <span className={`h-1.5 w-1.5 rounded-full ${offline ? 'bg-white/40' : 'pulse-dot bg-[rgb(var(--sign-yellow))]'}`} />
+              {offline ? 'off air' : `ask about ${firstName}`}
             </span>
-            <div className="flex space-x-1">
-               <div className="pulse-dot w-2 h-2 bg-saffron rounded-full"></div>
-            </div>
-          </div>
+          </header>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[300px]">
+          <div className="min-h-[300px] flex-1 space-y-3 overflow-y-auto px-4 pb-3 pt-5">
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] p-3 text-sm leading-relaxed ${
-                  msg.role === 'user' 
-                    ? 'bg-ink text-paper rounded-lg rounded-br-sm' 
-                    : 'bg-paper text-ink border border-line rounded-lg rounded-bl-sm'
+                <div className={`max-w-[85%] rounded-md px-3 py-2 text-sm leading-relaxed ${
+                  msg.role === 'user'
+                    ? 'bg-[rgb(var(--sign-blue))] text-white'
+                    : 'border border-ink/15 bg-white/70 text-ink dark:bg-white/5'
                 }`}>
                   {msg.text}
                 </div>
@@ -110,11 +95,11 @@ export const AIChat: React.FC = () => {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-paper border border-line rounded-lg rounded-bl-sm p-3 text-sm">
-                  <span className="inline-flex space-x-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-muted animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                <div className="rounded-md border border-ink/15 bg-white/70 px-3 py-2 text-sm dark:bg-white/5">
+                  <span className="inline-flex gap-1">
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/50" style={{ animationDelay: '0ms' }} />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/50" style={{ animationDelay: '150ms' }} />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/50" style={{ animationDelay: '300ms' }} />
                   </span>
                 </div>
               </div>
@@ -122,24 +107,19 @@ export const AIChat: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-3 border-t border-line">
-            <form onSubmit={handleSend} className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type a message..."
-                className="flex-1 rounded-md bg-paper border border-line focus:border-ink/30 outline-none px-4 py-2 text-sm transition-colors text-ink placeholder:text-muted"
-              />
-              <button 
-                type="submit" 
-                disabled={!input.trim() || isLoading}
-                className="press rounded-md px-4 py-2 bg-ink text-paper text-sm font-medium disabled:opacity-40"
-              >
-                Send
-              </button>
-            </form>
-          </div>
+          <form onSubmit={handleSend} className="flex gap-2 border-t border-dashed border-ink/20 p-3">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Over to you…"
+              className="flex-1 rounded-md border border-ink/20 bg-white/70 px-3 py-2 text-sm text-ink outline-none transition-colors placeholder:text-ink/45 focus:border-[rgb(var(--sign-green))] dark:bg-white/5"
+            />
+            <button type="submit" disabled={!input.trim() || isLoading} className="btn-sign press grid h-9 w-9 place-items-center rounded-md disabled:opacity-40" aria-label="Send">
+              <Icon.Send size={15} />
+            </button>
+          </form>
+          <span className="fold" />
         </div>
       )}
     </>

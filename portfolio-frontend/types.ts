@@ -18,6 +18,13 @@ export interface Profile {
   years_of_experience: number | null;
   experience_label?: string | null;
   availability_status: 'available' | 'busy' | 'not_available';
+  /** One line under the name, e.g. on the résumé and the hero card. */
+  tagline?: string | null;
+  /** Spoken languages, e.g. ["Hindi", "English"] */
+  languages?: string[];
+  /** Kinds of work currently wanted, e.g. ["Full-time", "Freelance"] */
+  open_to?: string[];
+  time_zone?: string;
 }
 
 export interface Experience {
@@ -138,4 +145,12 @@ export interface Milestone {
   accent: Accent;
   /** Projects built at this stop, by Project.id */
   projectIds: number[];
+  /** Longer label for the stop, e.g. "Aug 2025 – Jun 2026" */
+  period?: string;
+  /** Job title or degree held at this stop */
+  role?: string;
+  /** A few things that happened here, shown as a list on the card */
+  bullets?: string[];
+  /** Tools that mattered at this stop */
+  tags?: string[];
 }

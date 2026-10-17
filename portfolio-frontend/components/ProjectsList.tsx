@@ -1,8 +1,61 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProjects } from '../hooks/usePortfolio';
-import { projectAccent } from './panels';
-import { Eyebrow, Icon, Reveal, SlipArrow, Spotlight, accentBg } from './ui';
+import { Project } from '../types';
+import { Icon, Reveal, SlipArrow } from './ui';
+
+/** Sign colour for a project category, so the chips match the yards and billboards on the road. */
+export const categoryColour = (category: string | null): 'green' | 'blue' | 'brown' | 'red' | 'yellow' => {
+  const c = (category ?? '').toLowerCase();
+  if (c.includes('ai') || c.includes('health')) return 'red';
+  if (c.includes('legal') || c.includes('edtech') || c.includes('analytics')) return 'blue';
+  if (c.includes('erp') || c.includes('commerce') || c.includes('web3')) return 'brown';
+  if (c.includes('tool') || c.includes('automation')) return 'yellow';
+  return 'green';
+};
+
+export const projectYear = (p: Project) => (p.start_date ? new Date(p.start_date).getFullYear() : null);
+
+/** A project as a paper card with a taped polaroid of the screenshot. */
+export const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
+  const year = projectYear(project);
+  const initials = project.title.split(':')[0].split(' ').map((w) => w[0]).join('').slice(0, 3);
+  return (
+    <Link to={`/projects/${project.id}`} className="group block h-full">
+      <article className="card-paper flex h-full flex-col p-3 transition-transform duration-500 ease-out group-hover:-translate-y-1">
+        <span className="tape" style={{ left: '50%', marginLeft: -46, transform: `rotate(${index % 2 ? 3 : -4}deg)` }} />
+        <div className="polaroid" style={{ '--tilt': index % 2 ? '0.8deg' : '-0.8deg' } as React.CSSProperties}>
+          <div className="aspect-[16/10] overflow-hidden rounded-[2px] bg-[#e9e3d6]">
+            {project.image_url ? (
+              <img src={project.image_url} alt={project.title} loading="lazy" className="h-full w-full object-cover object-top transition-transform duration-[1.2s] ease-out group-hover:scale-[1.04]" />
+            ) : (
+              <div className="grid h-full place-items-center bg-[rgb(var(--sign-green))]">
+                <span className="type-3d green text-[44px]">{initials}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-1 flex-col px-1.5 pb-1 pt-4">
+          <div className="flex items-center gap-2">
+            <span className={`chip-sign ${categoryColour(project.category)}`}>{project.category}</span>
+            {project.status && <span className="text-[11.5px] capitalize text-ink/60">{project.status}</span>}
+            {year && <span className="ml-auto font-mono text-[10.5px] text-ink/55">{year}</span>}
+          </div>
+          <h2 className="mt-2.5 font-display text-[16px] leading-tight text-ink">{project.title}</h2>
+          <p className="mt-2 text-[14px] leading-relaxed text-ink/75 line-clamp-3">{project.description}</p>
+          {project.technologies && project.technologies.length > 0 && (
+            <p className="mt-3 truncate font-mono text-[11px] text-ink/55">{project.technologies.slice(0, 4).join(' · ')}</p>
+          )}
+          <div className="mt-auto flex items-center justify-between border-t border-dashed border-ink/20 pt-3">
+            <span className="font-display text-[10.5px] uppercase tracking-wide text-[rgb(var(--sign-green))]">Case study</span>
+            <span className="btn-sign grid h-8 w-8 place-items-center rounded-md"><SlipArrow size={14} /></span>
+          </div>
+        </div>
+        <span className="fold" />
+      </article>
+    </Link>
+  );
+};
 
 export const ProjectsList: React.FC = () => {
   const { data: projects } = useProjects();
@@ -26,42 +79,42 @@ export const ProjectsList: React.FC = () => {
   }, []);
 
   const filters = [undefined, ...categories];
+  const live = (projects ?? []).filter((p) => p.website_url).length;
 
   return (
-    <div className="relative overflow-hidden">
-      <div className="absolute inset-x-0 top-0 h-[480px] dot-grid pointer-events-none" />
-      <div className="aurora w-[460px] h-[360px] -top-40 -right-24 bg-saffron/30" />
-
-      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-32 md:pt-40 pb-24">
+    <div className="relative">
+      <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 md:px-8 md:pt-36">
         <Reveal>
-          <Link to="/" className="group inline-flex items-center gap-2 text-sm text-muted hover:text-ink transition-colors">
-            <Icon.ArrowLeft size={15} className="transition-transform duration-300 group-hover:-translate-x-1" />
-            Home
+          <Link to="/" className="chip-sign paper press">
+            <Icon.ArrowLeft size={12} /> Back to the road
           </Link>
-          <div className="mt-10">
-            <Eyebrow accent="saffron">{filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}</Eyebrow>
-            <h1 className="mt-5 max-w-3xl text-4xl md:text-6xl leading-[1.04] font-semibold tracking-[-0.035em] text-ink">
-              All projects
-            </h1>
-            <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-muted">
-              Hospital tools, a legal platform, ERPs, client websites and the small utilities I built for myself.
-            </p>
+          <div className="mt-8 flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="font-display text-[11px] uppercase tracking-[0.22em] text-white drop-shadow-[0_2px_0_rgba(0,0,0,0.45)]">Points of interest</p>
+              <h1 className="type-3d brown big mt-2 text-[40px] leading-[1] md:text-[64px]">All projects</h1>
+            </div>
+            <div className="sign sign-green !m-0 drop-in">
+              <h2 className="sign-title">{filteredProjects.length} {filteredProjects.length === 1 ? 'stop' : 'stops'}</h2>
+              <span className="sign-meta">{live} live</span>
+            </div>
           </div>
+          <p className="card-paper mt-6 max-w-2xl px-5 py-4 text-[15.5px] leading-relaxed text-ink/85">
+            Hospital tools, a legal platform, ERPs, client websites and the small utilities I built for myself. The featured ones have billboards on the home page road; everything else is here.
+          </p>
         </Reveal>
 
         {categories.length > 0 && (
           <Reveal delay={100}>
-            <div className="mt-10 -mx-5 px-5 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
+            <div className="-mx-4 mt-8 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none]">
               {filters.map((category) => {
                 const active = selectedCategory === category;
                 return (
                   <button
                     key={category ?? 'all'}
                     onClick={() => setSelectedCategory(category)}
-                    className={`press shrink-0 rounded-md border px-4 py-2 text-[13px] font-medium transition-all duration-300
-                      ${active ? 'border-ink bg-ink text-paper shadow-soft' : 'border-line bg-surface/60 text-muted hover:text-ink hover:border-ink/25'}`}
+                    className={`chip-sign press shrink-0 !px-3 !py-2 !text-[10.5px] ${active ? 'green' : 'paper'}`}
                   >
-                    {category ?? 'All'}
+                    {category ?? `All ${projects?.length ?? ''}`}
                   </button>
                 );
               })}
@@ -70,51 +123,14 @@ export const ProjectsList: React.FC = () => {
         )}
 
         {filteredProjects.length === 0 ? (
-          <p className="mt-16 rounded-lg border border-line p-12 text-center text-muted">No projects in this category yet.</p>
+          <p className="card-paper mt-12 p-12 text-center text-ink/70">No projects in this category yet.</p>
         ) : (
-          <div className="mt-12 grid gap-x-8 gap-y-14 md:grid-cols-2">
-            {filteredProjects.map((project, index) => {
-              const accent = projectAccent(project.id);
-              return (
-                <Reveal key={`${selectedCategory ?? 'all'}-${project.id}`} delay={(index % 2) * 110}>
-                  <Link to={`/projects/${project.id}`} className="group block">
-                    <Spotlight accent={accent} tilt className="rounded-lg border border-line bg-surface p-1.5 shadow-soft transition-shadow duration-500 group-hover:shadow-lift">
-                      <div className="relative z-[3] aspect-[16/10] overflow-hidden rounded-md border border-line bg-paper">
-                        {project.image_url ? (
-                          <img
-                            src={project.image_url}
-                            alt={project.title}
-                            loading="lazy"
-                            className="h-full w-full object-cover object-top transition-transform duration-[1.2s] ease-out group-hover:scale-[1.05]"
-                          />
-                        ) : (
-                          <div className="grid h-full place-items-center text-sm text-muted">No preview</div>
-                        )}
-                      </div>
-                    </Spotlight>
-                    <div className="mt-5 flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 text-xs text-muted">
-                          <span className={`h-1.5 w-1.5 rounded-full ${accentBg[accent]}`} />
-                          {project.category}
-                          {project.status && <span className="capitalize">· {project.status}</span>}
-                        </div>
-                        <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-ink">{project.title}</h2>
-                        <p className="mt-2 text-[15px] leading-relaxed text-muted line-clamp-2">{project.description}</p>
-                        {project.technologies && project.technologies.length > 0 && (
-                          <p className="mt-3 truncate font-mono text-[11.5px] text-muted/80">
-                            {project.technologies.slice(0, 4).join(' · ')}
-                          </p>
-                        )}
-                      </div>
-                      <span className="mt-6 grid h-10 w-10 shrink-0 place-items-center rounded-md border border-line text-muted transition-all duration-300 group-hover:bg-ink group-hover:text-paper group-hover:border-ink">
-                        <SlipArrow size={15} />
-                      </span>
-                    </div>
-                  </Link>
-                </Reveal>
-              );
-            })}
+          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredProjects.map((project, index) => (
+              <Reveal key={`${selectedCategory ?? 'all'}-${project.id}`} delay={(index % 3) * 90} className="h-full">
+                <ProjectCard project={project} index={index} />
+              </Reveal>
+            ))}
           </div>
         )}
       </div>

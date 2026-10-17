@@ -4,6 +4,9 @@ import { Accent } from '../types';
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/** Scroll behaviour that respects the reduced-motion preference. */
+export const scrollBehavior = (): ScrollBehavior => (prefersReducedMotion() ? 'auto' : 'smooth');
+
 const canHover = () =>
   typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
@@ -194,8 +197,15 @@ export const CountUp: React.FC<{ value: string; className?: string }> = ({ value
   const target = match ? parseFloat(match[1]) : NaN;
   const suffix = match ? match[2] : '';
   const decimals = match && match[1].includes('.') ? match[1].split('.')[1].length : 0;
-  const { ref, inView } = useInView<HTMLSpanElement>();
+  const { ref, inView: seen } = useInView<HTMLSpanElement>();
   const [current, setCurrent] = useState(0);
+  // If the observer never reports (very old browsers, odd embeds), show the number anyway
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLate(true), 2500);
+    return () => clearTimeout(t);
+  }, []);
+  const inView = seen || late;
 
   useEffect(() => {
     if (!inView || isNaN(target)) return;
@@ -304,6 +314,12 @@ export const Icon = {
   Menu: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M4 8h16M4 16h16" />),
   Close: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M6 6l12 12M18 6 6 18" />),
   Sparkle: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18" />),
+  Globe: ({ size = 16, className }: IconProps) => stroke(size, className, <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></>),
+  Phone: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />),
+  Smartphone: ({ size = 16, className }: IconProps) => stroke(size, className, <><rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" /></>),
+  Clock: ({ size = 16, className }: IconProps) => stroke(size, className, <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>),
+  Chat: ({ size = 16, className }: IconProps) => stroke(size, className, <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />),
+  Send: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4z" /></>),
   Github: ({ size = 16, className }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3" />
