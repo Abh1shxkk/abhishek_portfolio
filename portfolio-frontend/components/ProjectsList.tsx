@@ -147,7 +147,8 @@ export const ProjectsList: React.FC = () => {
   const live = (projects ?? []).filter((p) => p.website_url).length;
 
   return (
-    <div className="relative">
+    // overflow-x-clip: the full-bleed wall uses 100vw, which includes the scrollbar on Windows
+    <div className="relative overflow-x-clip">
       <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 md:px-8 md:pt-36">
         <Reveal>
           <Link to="/" className="chip-sign paper press">
@@ -194,6 +195,9 @@ export const ProjectsList: React.FC = () => {
           {WALL_TAGS.map((t) => (
             <span key={t.text} className="wall-tag" style={t.style} aria-hidden="true">{t.text}</span>
           ))}
+          {/* Pools of lamp light on the bricks at night */}
+          <span className="wall-lamp" style={{ left: '8%' }} aria-hidden="true" />
+          <span className="wall-lamp" style={{ left: '58%' }} aria-hidden="true" />
 
           {filteredProjects.length === 0 ? (
             <p className="g-poster marker relative mx-auto max-w-md p-10 text-center text-[20px]">Nothing on the wall for this one yet.</p>

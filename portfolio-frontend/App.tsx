@@ -10,7 +10,7 @@ import { BlogList } from './components/BlogList';
 import { BlogPostPage } from './components/BlogPost';
 import { ProjectsList } from './components/ProjectsList';
 import { ProjectDetailPage } from './components/ProjectDetail';
-import { PageSky } from './components/PageSky';
+import { Backdrop } from './components/Backdrop';
 import { SectionId, Theme } from './types';
 import { useProfile } from './hooks/usePortfolio';
 
@@ -126,14 +126,14 @@ const PortfolioHome: React.FC<{ activeSection: string; setActiveSection: (s: str
   );
 };
 
-// Content Layout Wrapper (includes Header + Footer) over the flat countryside backdrop
+// Content Layout Wrapper (includes Header + Footer) over the living street-corner backdrop
 const ContentLayout: React.FC<{ children: React.ReactNode; theme: Theme; onToggleTheme: () => void; activeNav: string }> = ({
   children, theme, onToggleTheme, activeNav
 }) => {
   return (
     <div className="grain bg-paper min-h-screen">
       <ScrollProgress />
-      <PageSky />
+      <Backdrop />
       <Header activeSection={activeNav} theme={theme} onToggleTheme={onToggleTheme} />
       <div className="relative z-[1]">
         {children}
