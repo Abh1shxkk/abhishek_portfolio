@@ -58,11 +58,22 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, theme, onToggleTh
 
   // The yellow plate sits under the hovered link, or the active one when nothing is hovered
   const target = hovered ?? NAV_ITEMS.find(isActive)?.id ?? null;
+  // Nav items change width when the Bungee web font finishes loading (it is wider than the
+  // fallback), so re-measure the highlight whenever an item resizes and once fonts are ready.
+  const [layoutTick, setLayoutTick] = useState(0);
+  useEffect(() => {
+    const bump = () => setLayoutTick((t) => t + 1);
+    const ro = new ResizeObserver(bump);
+    Object.values(itemRefs.current).forEach((el) => el && ro.observe(el));
+    document.fonts?.ready.then(bump);
+    return () => ro.disconnect();
+  }, []);
+
   useLayoutEffect(() => {
     const el = target ? itemRefs.current[target] : null;
     if (el) setPill({ left: el.offsetLeft, width: el.offsetWidth, visible: true });
     else setPill((p) => ({ ...p, visible: false }));
-  }, [target, isScrolled]);
+  }, [target, isScrolled, layoutTick]);
 
   const scrollToSection = (id: string) => {
     if (!isHome) {

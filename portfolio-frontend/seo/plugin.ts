@@ -40,11 +40,19 @@ const contentDate = (root: string): string | null => {
 const notFoundPage = (template: string) =>
   template
     .replace(HEAD, pageHead('/__not-found__'))
+    // Styled with the site's own sign/paper classes (styles.css + compiled Tailwind are still linked)
     .replace(
       BODY,
-      '<div class="prerender"><nav aria-label="Main"><a href="/">Home</a> · <a href="/projects">All projects</a></nav>' +
-        '<h1>This road doesn’t go anywhere</h1><p>The page you were looking for doesn’t exist, or it moved.</p>' +
-        '<p><a href="/">Back to the start</a> or <a href="/projects">browse all projects</a>.</p></div>'
+      '<main class="grain bg-paper flex min-h-screen items-center justify-center px-4 py-16">' +
+        '<div class="card-paper w-full max-w-lg">' +
+        '<header class="sign sign-red"><h1 class="sign-title">Road closed</h1><span class="sign-meta">Error 404</span></header>' +
+        '<div class="px-6 pb-7 pt-5">' +
+        '<p class="type-3d red text-[30px] leading-tight md:text-[38px]">Wrong turn</p>' +
+        '<p class="mt-3 text-[15px] leading-relaxed text-ink/80">This road doesn’t go anywhere. The page you were looking for doesn’t exist, or it moved.</p>' +
+        '<div class="mt-6 flex flex-wrap gap-2">' +
+        '<a href="/" class="btn-sign press inline-flex items-center gap-2 rounded-md px-4 py-2.5 font-display text-[12px] uppercase tracking-wide">Back to the start</a>' +
+        '<a href="/projects" class="btn-paper press inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium">Browse all projects</a>' +
+        '</div></div></div></main>'
     )
     // A static page: don't boot the app, which has no route for unknown URLs
     .replace(/<script type="module"[^>]*><\/script>\s*/g, '')

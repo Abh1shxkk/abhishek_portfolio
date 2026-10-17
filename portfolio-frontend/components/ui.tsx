@@ -332,3 +332,21 @@ export const useDarkMode = ({ deferred = false } = {}) => {
   return dark;
 };
 
+let webglSupport: boolean | undefined;
+/**
+ * Whether the 3D scenes can run here. False with ?nogl=1 (layout checks), or when the device or
+ * browser has no WebGL; the scenes then fall back to a flat background instead of crashing the page.
+ */
+export const canUseWebGL = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  if (new URLSearchParams(window.location.search).has('nogl')) return false;
+  if (webglSupport === undefined) {
+    try {
+      const c = document.createElement('canvas');
+      webglSupport = !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
+    } catch {
+      webglSupport = false;
+    }
+  }
+  return webglSupport;
+};

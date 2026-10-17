@@ -7,7 +7,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { useNavigate } from 'react-router-dom';
 import { Accent } from '../types';
 import { JOURNEY, PROJECTS_DATA, SKILLS_GROUPED } from '../data/portfolio';
-import { useDarkMode } from './ui';
+import { useDarkMode, canUseWebGL } from './ui';
 
 /*
  * The whole home page is one 3D world. A road runs through five districts and the
@@ -475,8 +475,8 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     const mount = mountRef.current;
     if (!mount) return;
     const p = dark ? PALETTE.dark : PALETTE.light;
-    // ?nogl=1 skips the 3D world (layout checks, very old devices); the page still works without it
-    if (new URLSearchParams(window.location.search).has('nogl')) {
+    // No WebGL (or ?nogl=1): a flat sky-and-ground background instead of the 3D world; the page still works
+    if (!canUseWebGL()) {
       mount.style.background = `linear-gradient(180deg, #${p.zenith.toString(16).padStart(6, '0')}, #${p.horizon.toString(16).padStart(6, '0')} 45%, #${p.ground.toString(16).padStart(6, '0')} 45%)`;
       return () => { mount.style.background = ''; };
     }

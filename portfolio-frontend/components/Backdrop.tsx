@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { PageSky } from './PageSky';
-import { useDarkMode } from './ui';
+import { useDarkMode, canUseWebGL } from './ui';
 import { PALETTE, SKY_SUN_DIR, box, buildKind, glowTexture, makeBird, makeCloud, mat, seeded, type Kind } from './World';
 
 /*
@@ -22,7 +22,7 @@ const STREET: { kind: Kind; x: number }[] = [
 export const Backdrop: React.FC = () => {
   const dark = useDarkMode({ deferred: true });
   const mountRef = useRef<HTMLDivElement>(null);
-  const noGl = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('nogl');
+  const noGl = !canUseWebGL();
 
   useEffect(() => {
     const mount = mountRef.current;
