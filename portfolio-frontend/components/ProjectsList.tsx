@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProjects } from '../hooks/usePortfolio';
 import { Project } from '../types';
@@ -79,8 +79,8 @@ const BoardCard: React.FC<{ project: Project; index: number }> = ({ project, ind
       style={{ '--tilt': `${tilt}deg`, '--dy': `${dy}px` } as React.CSSProperties}
     >
       {taped
-        ? <span className="b-tape" style={{ left: `${16 + rnd(i, 10) * 52}%`, transform: `rotate(${(rnd(i, 11) - 0.5) * 12}deg)` }} />
-        : <span className="b-pin" style={{ '--pin': pin, left: `${30 + rnd(i, 10) * 40}%` } as React.CSSProperties} />}
+        ? <span className="b-tape" data-anchor={project.is_featured ? '' : undefined} style={{ left: `${16 + rnd(i, 10) * 52}%`, transform: `rotate(${(rnd(i, 11) - 0.5) * 12}deg)` }} />
+        : <span className="b-pin" data-anchor={project.is_featured ? '' : undefined} style={{ '--pin': pin, left: `${30 + rnd(i, 10) * 40}%` } as React.CSSProperties} />}
       {project.is_featured && <span className="b-ribbon">Featured</span>}
       {project.website_url && rnd(i, 13) < 0.4 && <span className="b-live">LIVE</span>}
       {doodle && (
@@ -146,9 +146,62 @@ const BoardCard: React.FC<{ project: Project; index: number }> = ({ project, ind
   );
 };
 
+// Loose pins and paper scraps scattered on the cork, in board percentages
+const LOOSE_PINS = Array.from({ length: 8 }, (_, i) => ({
+  left: `${4 + rnd(i, 30) * 92}%`, top: `${3 + rnd(i, 31) * 94}%`, pin: PINS[Math.floor(rnd(i, 32) * PINS.length)],
+}));
+const SCRAPS = Array.from({ length: 4 }, (_, i) => ({
+  left: `${6 + rnd(i, 40) * 88}%`, top: `${5 + rnd(i, 41) * 88}%`, rot: `${(rnd(i, 42) - 0.5) * 50}deg`,
+}));
+
+/** Red thread strung between the featured cards' pins, like a route on a map. */
+const Thread: React.FC<{ boardRef: React.RefObject<HTMLDivElement | null>; deps: unknown }> = ({ boardRef, deps }) => {
+  const [d, setD] = useState<{ path: string; dots: [number, number][] }>({ path: '', dots: [] });
+
+  useLayoutEffect(() => {
+    const board = boardRef.current;
+    if (!board) return;
+    const measure = () => {
+      const b = board.getBoundingClientRect();
+      const pts = Array.from(board.querySelectorAll<HTMLElement>('[data-anchor]')).map((el) => {
+        const r = el.getBoundingClientRect();
+        return [r.left + r.width / 2 - b.left, r.top + r.height / 2 - b.top] as [number, number];
+      });
+      if (pts.length < 2) return setD({ path: '', dots: pts });
+      let path = `M ${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 1; i < pts.length; i++) {
+        const [x0, y0] = pts[i - 1];
+        const [x1, y1] = pts[i];
+        // Sag the thread a little, like real string
+        path += ` Q ${(x0 + x1) / 2} ${Math.max(y0, y1) + 28} ${x1} ${y1}`;
+      }
+      setD({ path, dots: pts });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(board);
+    const t = window.setTimeout(measure, 600); // after the reveal animation and fonts settle
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.clearTimeout(t);
+      window.removeEventListener('resize', measure);
+    };
+  }, [boardRef, deps]);
+
+  if (!d.path) return null;
+  return (
+    <svg className="b-thread" aria-hidden="true">
+      <path d={d.path} />
+      {d.dots.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2.5" />)}
+    </svg>
+  );
+};
+
 export const ProjectsList: React.FC = () => {
   const { data: projects } = useProjects();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const boardRef = useRef<HTMLDivElement>(null);
 
   const categories = useMemo(
     () => Array.from(new Set((projects ?? []).map((p) => p.category).filter(Boolean) as string[])).sort(),
@@ -212,7 +265,14 @@ export const ProjectsList: React.FC = () => {
           </Reveal>
         )}
 
-        <div className="board mt-14">
+        <div ref={boardRef} className="board mt-14">
+          {LOOSE_PINS.map((p, i) => (
+            <span key={`pin-${i}`} className="b-loosepin" style={{ left: p.left, top: p.top, '--pin': p.pin } as React.CSSProperties} aria-hidden="true" />
+          ))}
+          {SCRAPS.map((s, i) => (
+            <span key={`scrap-${i}`} className="b-scrap" style={{ left: s.left, top: s.top, transform: `rotate(${s.rot})` }} aria-hidden="true" />
+          ))}
+          <Thread boardRef={boardRef} deps={selectedCategory} />
           {filteredProjects.length === 0 ? (
             <p className="b-note marker relative mx-auto max-w-md p-8 text-center text-[20px]">Nothing pinned up for this one yet.</p>
           ) : (
