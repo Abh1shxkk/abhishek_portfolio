@@ -4,3 +4,7 @@
 name = "abhishek-portfolio"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-10-01"
+
+# Not secret: hostnames allowed to call /api/chat besides *.pages.dev and localhost
+[vars]
+ALLOWED_ORIGINS = "abhishekdev.online,www.abhishekdev.online"
