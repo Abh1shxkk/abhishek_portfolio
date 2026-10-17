@@ -18,6 +18,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: SectionId.Skills, label: 'Skills', section: SectionId.Skills },
   { id: SectionId.Projects, label: 'Work', section: SectionId.Projects },
   { id: 'projects', label: 'All projects', route: '/projects' },
+  { id: 'services', label: 'Services', route: '/services' },
   // The blog link only appears once there is something to read
   ...(BLOG_DATA.length > 0 ? [{ id: 'blog', label: 'Blog', route: '/blog' }] : []),
 ];

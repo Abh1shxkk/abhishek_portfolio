@@ -9,6 +9,7 @@ import { AIChat } from './components/AIChat';
 import { BlogList } from './components/BlogList';
 import { BlogPostPage } from './components/BlogPost';
 import { ProjectsList } from './components/ProjectsList';
+import { AboutPage, MeerutPage, ServicesPage } from './components/ServicePages';
 import { ProjectDetailPage } from './components/ProjectDetail';
 import { Backdrop } from './components/Backdrop';
 import { SectionId, Theme } from './types';
@@ -177,6 +178,30 @@ const AppContent: React.FC = () => {
         element={
           <ContentLayout theme={theme} onToggleTheme={cycleTheme} activeNav="projects">
             <ProjectsList />
+          </ContentLayout>
+        }
+      />
+      <Route
+        path="/services"
+        element={
+          <ContentLayout theme={theme} onToggleTheme={cycleTheme} activeNav="services">
+            <ServicesPage />
+          </ContentLayout>
+        }
+      />
+      <Route
+        path="/meerut"
+        element={
+          <ContentLayout theme={theme} onToggleTheme={cycleTheme} activeNav="meerut">
+            <MeerutPage />
+          </ContentLayout>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <ContentLayout theme={theme} onToggleTheme={cycleTheme} activeNav="about">
+            <AboutPage />
           </ContentLayout>
         }
       />

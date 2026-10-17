@@ -10,6 +10,7 @@
  * Keep this file free of browser-only code: it runs in Node during the build.
  */
 import { BLOG_DATA, EDUCATION_DATA, EXPERIENCE_DATA, PROFILE_DATA, PROJECTS_DATA, SKILLS_GROUPED, publicTitle } from '../data/portfolio';
+import { FAQ, MEERUT, PACKAGES, PACKAGE_TERMS, PROCESS, SERVICES, formatInr } from '../data/services';
 import type { Project } from '../types';
 
 export const SITE = 'https://abhishekdev.online';
@@ -49,6 +50,9 @@ export const projectPath = (p: Project) => `/projects/${p.id}`;
 export const allRoutes = (): string[] => [
   '/',
   '/projects',
+  '/services',
+  '/meerut',
+  '/about',
   ...PROJECTS_DATA.map(projectPath),
   // The blog stays out of the sitemap and pre-rendering until it has posts
   ...(BLOG_DATA.length ? ['/blog', ...BLOG_DATA.map((b) => `/blog/${b.slug}`)] : []),
@@ -193,6 +197,82 @@ export const routeMeta = (pathname: string): RouteMeta => {
     };
   }
 
+  if (path === '/services') {
+    const description = clip(
+      `Websites from ${formatInr(PACKAGES[0].price)} with domain and hosting, plus Laravel web apps, ERPs, AI chatbots, APIs and Android apps by ${NAME}, Meerut. Fixed quotes, you own the work.`
+    );
+    const url = `${SITE}/services`;
+    return {
+      title: `Services & Prices | Websites, Laravel Apps & AI | ${NAME}`,
+      description,
+      canonical: url,
+      image: DEFAULT_IMAGE,
+      imageAlt: DEFAULT_IMAGE_ALT,
+      ogType: 'website',
+      jsonLd: graph(
+        { '@type': 'WebPage', '@id': `${url}#page`, url, name: 'Services and prices', description, isPartOf: { '@id': `${SITE}/#website` }, about: { '@id': `${SITE}/#person` } },
+        ...PACKAGES.map((pk) => ({
+          '@type': 'Service',
+          '@id': `${url}#${pk.id}`,
+          name: pk.name,
+          description: pk.pitch,
+          serviceType: 'Website design and development',
+          provider: { '@id': `${SITE}/#person` },
+          areaServed: [{ '@type': 'City', name: 'Meerut' }, { '@type': 'Country', name: 'India' }],
+          offers: { '@type': 'Offer', price: pk.price, priceCurrency: 'INR' },
+        })),
+        ...SERVICES.filter((sv) => sv.id !== 'websites').map((sv) => ({
+          '@type': 'Service',
+          '@id': `${url}#${sv.id}`,
+          name: sv.title,
+          description: sv.summary,
+          provider: { '@id': `${SITE}/#person` },
+          areaServed: [{ '@type': 'City', name: 'Meerut' }, { '@type': 'Country', name: 'India' }],
+        })),
+        breadcrumbs([['Home', '/'], ['Services', '/services']])
+      ),
+      noindex: false,
+    };
+  }
+
+  if (path === '/meerut') {
+    const description = clip(
+      `${NAME} is a web developer based in Meerut who meets clients in person. Business websites from ${formatInr(PACKAGES[0].price)}, plus Laravel apps, ERPs and AI tools for local businesses.`
+    );
+    const url = `${SITE}/meerut`;
+    return {
+      title: `Web Developer in Meerut | Websites & Laravel Apps | ${NAME}`,
+      description,
+      canonical: url,
+      image: DEFAULT_IMAGE,
+      imageAlt: DEFAULT_IMAGE_ALT,
+      ogType: 'website',
+      jsonLd: graph(
+        { '@type': 'WebPage', '@id': `${url}#page`, url, name: 'Web developer in Meerut', description, isPartOf: { '@id': `${SITE}/#website` }, about: { '@id': `${SITE}/#person` } },
+        breadcrumbs([['Home', '/'], ['Meerut', '/meerut']])
+      ),
+      noindex: false,
+    };
+  }
+
+  if (path === '/about') {
+    const description = clip(`About ${NAME}: ${PROFILE_DATA.tagline ?? PROFILE_DATA.bio} Based in Meerut, working with clients across India and abroad.`);
+    const url = `${SITE}/about`;
+    return {
+      title: `About ${NAME} | ${PROFILE_DATA.title}, Meerut`,
+      description,
+      canonical: url,
+      image: abs(PROFILE_DATA.avatar) ?? DEFAULT_IMAGE,
+      imageAlt: NAME,
+      ogType: 'profile',
+      jsonLd: graph(
+        { '@type': 'AboutPage', '@id': `${url}#page`, url, name: `About ${NAME}`, description, mainEntity: { '@id': `${SITE}/#person` }, isPartOf: { '@id': `${SITE}/#website` } },
+        breadcrumbs([['Home', '/'], ['About', '/about']])
+      ),
+      noindex: false,
+    };
+  }
+
   if (path === '/blog' && BLOG_DATA.length) {
     return {
       title: `Blog | ${NAME}`,
@@ -272,7 +352,7 @@ export const pageHead = (pathname: string): string => {
   return tags.filter(Boolean).join('\n    ');
 };
 
-const nav = () => `<nav aria-label="Main"><a href="/">Home</a> · <a href="/projects">All projects</a> · <a href="${esc(PROFILE_DATA.resume_url)}">Résumé (PDF)</a> · <a href="mailto:${esc(PROFILE_DATA.email)}">Email</a></nav>`;
+const nav = () => `<nav aria-label="Main"><a href="/">Home</a> · <a href="/projects">All projects</a> · <a href="/services">Services</a> · <a href="/about">About</a> · <a href="/meerut">Meerut</a> · <a href="mailto:${esc(PROFILE_DATA.email)}">Email</a></nav>`;
 
 const projectList = (projects: Project[]) =>
   `<ul>${projects
@@ -342,6 +422,40 @@ export const pageBody = (pathname: string): string => {
         `</article><p>Next project: <a href="${projectPath(next)}">${esc(short(next.title))}</a></p>`
       );
     }
+  } else if (path === '/services') {
+    parts.push(
+      `<header><h1>Services and prices</h1><p>Websites for local businesses at fixed prices, and custom web apps, ERPs, AI assistants and Android apps quoted to your scope.</p></header>`,
+      `<section><h2>Website packages</h2>${PACKAGES.map(
+        (pk) => `<h3>${esc(pk.name)}: ${esc(formatInr(pk.price))}</h3><p>${esc(pk.pitch)} ${esc(pk.delivery)}.</p><ul>${pk.includes.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`
+      ).join('')}<ul>${PACKAGE_TERMS.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></section>`,
+      `<section><h2>Custom work</h2>${SERVICES.map((sv) => {
+        const proof = sv.proof.map((id) => PROJECTS_DATA.find((p) => p.id === id)).filter(Boolean) as Project[];
+        return `<h3 id="${sv.id}">${esc(sv.title)} (${esc(sv.price)})</h3><p>${esc(sv.summary)}</p><ul>${sv.includes.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>${
+          proof.length ? `<p>Built before: ${proof.map((p) => `<a href="${projectPath(p)}">${esc(short(p.title))}</a>`).join(', ')}</p>` : ''
+        }`;
+      }).join('')}</section>`,
+      `<section><h2>How a project runs</h2><ol>${PROCESS.map((st) => `<li><strong>${esc(st.title)}.</strong> ${esc(st.text)}</li>`).join('')}</ol></section>`,
+      `<section><h2>Questions people ask</h2>${FAQ.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join('')}</section>`,
+      contact()
+    );
+  } else if (path === '/meerut') {
+    parts.push(
+      `<header><h1>A web developer you can meet in Meerut</h1><p>I live and work in Meerut. ${esc(MEERUT.inPerson)} Websites for local businesses start at ${esc(formatInr(PACKAGES[0].price))}; custom apps, ERPs and AI tools are quoted to scope.</p></header>`,
+      `<section><h2>Local track record</h2><ul>${EXPERIENCE_DATA.map((e) => `<li>${esc(publicTitle(e.position))} at ${esc(e.company)}${e.location ? `, ${esc(e.location)}` : ''}. ${esc(e.description)}</li>`).join('')}${
+        EDUCATION_DATA[0] ? `<li>${esc(EDUCATION_DATA[0].degree)}, ${esc(EDUCATION_DATA[0].institution)}</li>` : ''
+      }</ul></section>`,
+      `<section><h2>Where I meet clients</h2><p>${MEERUT.areas.map(esc).join(', ')}. Anywhere else, we work over calls and WhatsApp.</p></section>`,
+      `<section><h2>What I build</h2><ul>${SERVICES.map((sv) => `<li><a href="/services#${sv.id}">${esc(sv.title)}</a> (${esc(sv.price)})</li>`).join('')}</ul></section>`,
+      contact()
+    );
+  } else if (path === '/about') {
+    parts.push(
+      `<header><h1>About ${esc(NAME)}</h1><p>${esc(PROFILE_DATA.title)}, ${esc(PROFILE_DATA.location)}.</p></header>`,
+      `<section><p>${esc(PROFILE_DATA.tagline)}</p><p>${esc(PROFILE_DATA.summary)}</p><p>I take on freelance and contract work: business websites, Laravel web apps, ERPs, APIs and AI assistants.</p></section>`,
+      `<section><h2>Work so far</h2><ul>${EXPERIENCE_DATA.map((e) => `<li>${esc(publicTitle(e.position))}, ${esc(e.company)}</li>`).join('')}</ul></section>`,
+      `<section><h2>Tools I use</h2><ul>${Object.entries(SKILLS_GROUPED).map(([g, sk]) => `<li><strong>${esc(g)}:</strong> ${sk.map((x) => esc(x.name)).join(', ')}</li>`).join('')}</ul><p><a href="/services">Services and prices</a> · <a href="/projects">All projects</a></p></section>`,
+      contact()
+    );
   } else if (path === '/blog') {
     parts.push(`<h1>Blog</h1><ul>${BLOG_DATA.map((b) => `<li><a href="/blog/${esc(b.slug)}">${esc(b.title)}</a> ${esc(b.excerpt)}</li>`).join('')}</ul>`);
   } else if (path.startsWith('/blog/')) {

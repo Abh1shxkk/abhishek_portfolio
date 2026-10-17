@@ -25,6 +25,9 @@ export const Footer: React.FC = () => {
     { label: 'Skills', hint: 'toolbox', onClick: () => goSection(SectionId.Skills) },
     { label: 'Work', hint: 'points of interest', onClick: () => goSection(SectionId.Projects) },
     { label: 'All projects', hint: 'the notice board', to: '/projects' },
+    { label: 'Services & prices', hint: 'what I build', to: '/services' },
+    { label: 'Meerut', hint: 'meet in person', to: '/meerut' },
+    { label: 'About', hint: 'the short version', to: '/about' },
     { label: 'Contact', hint: 'end of the road', onClick: () => goSection(SectionId.Contact) },
     { label: 'Resume', hint: 'PDF', onClick: () => resumeService.download() },
   ];
