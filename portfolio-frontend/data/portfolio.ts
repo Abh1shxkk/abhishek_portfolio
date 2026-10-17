@@ -557,7 +557,8 @@ export const PROJECTS_DATA: Project[] = [
     category: 'Website',
     description: 'Website for a Delhi branding and digital agency: services, work, why-us and testimonials, with a "Start your project" enquiry flow, built from a Figma design.',
     long_description: 'ThisBrand offers branding, web design and development, social media design and UI/UX. I turned their Figma design into a custom WordPress theme with a Vite asset build on PHP 8.3: bold uppercase display type, a hero with two calls to action, illustrated service cards, a featured-work section, why-choose-us points, client testimonials with ratings, and a project enquiry form. A sticky header keeps "Book free meeting" one click away, and the site includes work, about, services, blog, contact and legal pages.',
-    image_url: null,
+    image_url: '/projects/thisbrand.jpg',
+    gallery_images: ['/projects/thisbrand-services.jpg'],
     technologies: ['WordPress', 'PHP 8.3', 'Vite', 'JavaScript', 'Figma'],
     features: [
       'Figma design built as a custom WordPress theme',
