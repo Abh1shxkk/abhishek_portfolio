@@ -30,14 +30,6 @@ export const ProjectDetailPage: React.FC = () => {
   }, [project, allProjects]);
 
   useEffect(() => {
-    if (!project) return;
-    document.title = `${project.title} | Projects | Abhishek Chauhan`;
-    return () => {
-      document.title = 'Abhishek Chauhan | Portfolio';
-    };
-  }, [project]);
-
-  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [id]);
 

@@ -29,3 +29,7 @@ npm-debug.log*
 
 # Vercel
 .vercel
+
+# Local research notes and reports (not part of the site)
+research_notes/
+reports/

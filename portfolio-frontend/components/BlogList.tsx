@@ -13,13 +13,6 @@ export const BlogList: React.FC = () => {
   const { data: categories } = useBlogCategories();
   const posts = blogData?.data || [];
 
-  useEffect(() => {
-    document.title = 'Blog | Abhishek Chauhan';
-    return () => {
-      document.title = 'Abhishek Chauhan | Portfolio';
-    };
-  }, []);
-
   useEffect(() => setPage(1), [selectedCategory]);
 
   return (

@@ -4,27 +4,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Abhishek Chauhan, Full Stack Developer in Meerut. Web platforms, ERPs, REST APIs, mobile apps and AI tools that run in production. A 3D drive through the work." />
-  <link rel="canonical" href="https://abhishekdev.online/" />
-  <meta name="author" content="Abhishek Chauhan" />
-  <!-- How the link looks when shared on LinkedIn, WhatsApp, X, Slack… -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Abhishek Chauhan" />
-  <meta property="og:title" content="Abhishek Chauhan | Full Stack Developer" />
-  <meta property="og:description" content="Web platforms, ERPs, REST APIs, mobile apps and AI tools that run in production. Take a 3D drive through the work." />
-  <meta property="og:url" content="https://abhishekdev.online/" />
-  <meta property="og:image" content="https://abhishekdev.online/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Abhishek Chauhan's portfolio: a low-poly 3D countryside with his profile card" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@abh1shxkk" />
-  <meta name="twitter:title" content="Abhishek Chauhan | Full Stack Developer" />
-  <meta name="twitter:description" content="Web platforms, ERPs, REST APIs, mobile apps and AI tools that run in production. Take a 3D drive through the work." />
-  <meta name="twitter:image" content="https://abhishekdev.online/og-image.png" />
+  <!-- Per-page title, description, canonical, share tags and JSON-LD: filled in by the seo plugin in vite.config.ts -->
+  <!--seo-head-->
+  <!-- Plain-HTML version of the page, shown until the app loads (and read by crawlers) -->
+  <style>
+    .prerender { max-width: 720px; margin: 0 auto; padding: 96px 20px 48px; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1c1612; }
+    .prerender h1 { font-size: 28px; line-height: 1.2; margin: 12px 0; }
+    .prerender h2 { font-size: 19px; margin: 28px 0 8px; }
+    .prerender a { color: #1e5aa8; }
+    .prerender li { margin: 6px 0; }
+    .dark .prerender { color: #f1ebe0; }
+    .dark .prerender a { color: #8fb8ff; }
+  </style>
   <meta name="theme-color" content="#1f7a3f" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <title>Abhishek Chauhan | Portfolio</title>
   <script>
     // Apply the saved theme before first paint so the page never flashes the wrong colours
     (function () {
@@ -86,7 +79,7 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root"><!--seo-body--></div>
   <script type="module" src="/index.tsx"></script>
 </body>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProjects } from '../hooks/usePortfolio';
 import { Project } from '../types';
@@ -212,13 +212,6 @@ export const ProjectsList: React.FC = () => {
     () => (projects ?? []).filter((p) => !selectedCategory || p.category === selectedCategory),
     [projects, selectedCategory]
   );
-
-  useEffect(() => {
-    document.title = 'Projects | Abhishek Chauhan';
-    return () => {
-      document.title = 'Abhishek Chauhan | Portfolio';
-    };
-  }, []);
 
   const filters = [undefined, ...categories];
   const live = (projects ?? []).filter((p) => p.website_url).length;

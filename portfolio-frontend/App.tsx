@@ -12,7 +12,7 @@ import { ProjectsList } from './components/ProjectsList';
 import { ProjectDetailPage } from './components/ProjectDetail';
 import { Backdrop } from './components/Backdrop';
 import { SectionId, Theme } from './types';
-import { useProfile } from './hooks/usePortfolio';
+import { useSeo } from './seo/useSeo';
 
 // Theme Provider Hook
 const useTheme = () => {
@@ -70,7 +70,6 @@ const useTheme = () => {
 const PortfolioHome: React.FC<{ activeSection: string; setActiveSection: (s: string) => void; theme: Theme; onToggleTheme: () => void }> = ({
   activeSection, setActiveSection, theme, onToggleTheme
 }) => {
-  const { data: profile } = useProfile();
   const { hash } = useLocation();
 
   // Links such as /#story from other pages land on the right section
@@ -79,12 +78,6 @@ const PortfolioHome: React.FC<{ activeSection: string; setActiveSection: (s: str
     const t = setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: scrollBehavior() }), 80);
     return () => clearTimeout(t);
   }, [hash]);
-
-  useEffect(() => {
-    if (profile?.full_name) {
-      document.title = `${profile.full_name} | Portfolio`;
-    }
-  }, [profile]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -147,6 +140,8 @@ const ContentLayout: React.FC<{ children: React.ReactNode; theme: Theme; onToggl
 const AppContent: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>(SectionId.Hero);
   const { theme, cycleTheme } = useTheme();
+  // Title, description, canonical, share tags and structured data for the current route
+  useSeo();
 
   return (
     <Routes>
