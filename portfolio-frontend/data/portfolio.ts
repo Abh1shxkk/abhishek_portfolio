@@ -26,7 +26,7 @@ export const PROFILE_DATA: Profile = {
   github_url: 'https://github.com/abh1shxkk',
   linkedin_url: 'https://www.linkedin.com/in/abhishek-chauhan-880496394',
   twitter_url: 'https://x.com/abh1shxkk',
-  website_url: 'https://portfolio-frontend-sigma-jade.vercel.app',
+  website_url: 'https://abhishekdev.online',
   years_of_experience: 1.5,
   experience_label: '1.5 years',
   availability_status: 'available',

@@ -28,6 +28,7 @@ When visitors ask how to contact ${profile.full_name}, you should provide the fo
 📍 Location: ${profile.location || 'Remote'}
 
 Professional Links:
+🌐 Portfolio: ${profile.website_url || 'this website'}
 🔗 GitHub: ${profile.github_url || 'Not available'}
 🔗 LinkedIn: ${profile.linkedin_url || 'Not available'}
 🔗 Twitter: ${profile.twitter_url || 'Not available'}

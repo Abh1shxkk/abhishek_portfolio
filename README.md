@@ -72,7 +72,7 @@ npm run deploy              # build, then upload dist/ and functions/ to the "ab
 npm run deploy:secret       # once (or when rotating): stores GEMINI_API_KEY as an encrypted secret
 ```
 
-The first `npm run deploy` creates the project; the site is served at `https://abhishek-portfolio.pages.dev`.
+The first `npm run deploy` creates the project; the site is served at `https://abhishekdev.online` (and `https://abhishek-portfolio-35z.pages.dev`).
 Deep links such as `/projects/13` work without a redirects file, because Pages falls back to `index.html` for a
 single-page app. To test the production runtime locally, put `GEMINI_API_KEY=...` in `portfolio-frontend/.dev.vars`
 (git-ignored) and run `npm run build && npx wrangler pages dev dist`.
