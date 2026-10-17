@@ -16,111 +16,135 @@ export const categoryColour = (category: string | null): 'green' | 'blue' | 'bro
 
 export const projectYear = (p: Project) => (p.start_date ? new Date(p.start_date).getFullYear() : null);
 
-// ─── The wall ───
-// Every card is a different thing stuck to a graffiti wall: a wheat-paste poster, a die-cut
-// sticker, a spray stencil or a polaroid. Placement, tilt and decorations come from a seeded
-// random so the wall looks hand-arranged but never moves between visits.
+// ─── The notice board ───
+// Every project is something pinned to a roadside notice board: a postcard, a polaroid, a ticket
+// stub or an index card. Placement, tilt and the bits holding it on come from a seeded random, so
+// the board looks hand-arranged but never moves between visits.
 
 const rnd = (i: number, k: number) => {
   const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
   return x - Math.floor(x);
 };
 
-type Kind = 'poster' | 'sticker' | 'stencil' | 'polaroid';
-const KINDS: Kind[] = ['poster', 'sticker', 'stencil', 'polaroid'];
-const FILLS = ['#ff3d8b', '#ff8c42', '#3c6fb0', '#2a9d8f', '#8b5cf6'];
-const NEONS = ['#39ff88', '#ff3d8b', '#fff35c', '#5ce0ff'];
-const DOODLES = ['★ new', 'wow', 'try me →', 'click!', '👀', 'ship it', 'fav ♥', 'yesss'];
+type Kind = 'postcard' | 'polaroid' | 'ticket' | 'note';
+const KINDS: Kind[] = ['postcard', 'polaroid', 'ticket', 'note', 'postcard', 'polaroid'];
+const PINS = ['#e01e5a', '#1e5aa8', '#f4a300', '#1f7a3f', '#8b5cf6'];
+const STAMPS = ['#1f7a3f', '#1e5aa8', '#c0392b', '#7a4a2a'];
+const DOODLES = ['new!', 'fav ♥', 'try this', 'live now', 'look →', 'nice one'];
 
-const Crown: React.FC = () => (
-  <svg className="g-crown" viewBox="0 0 64 44" aria-hidden="true">
-    <path d="M4 36 L4 14 L18 24 L32 4 L46 24 L60 14 L60 36 Z" fill="#ffd600" stroke="#1c1612" strokeWidth="3" strokeLinejoin="round" />
-    <circle cx="4" cy="13" r="4" fill="#ff3d8b" stroke="#1c1612" strokeWidth="2.5" />
-    <circle cx="32" cy="4" r="4" fill="#5ce0ff" stroke="#1c1612" strokeWidth="2.5" />
-    <circle cx="60" cy="13" r="4" fill="#39ff88" stroke="#1c1612" strokeWidth="2.5" />
-    <rect x="4" y="36" width="56" height="5" fill="#1c1612" />
-  </svg>
-);
+const signColourHex: Record<ReturnType<typeof categoryColour>, string> = {
+  green: 'var(--sign-green)', blue: 'var(--sign-blue)', brown: 'var(--sign-brown)', red: 'var(--sign-red)', yellow: 'var(--sign-yellow)',
+};
 
-/** One thing stuck on the wall. */
-const WallCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
+/** One thing pinned to the board. */
+const BoardCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
   const i = index;
   const kind = KINDS[Math.floor(rnd(i, 1) * KINDS.length)];
-  const fill = FILLS[Math.floor(rnd(i, 5) * FILLS.length)];
-  const neon = NEONS[Math.floor(rnd(i, 6) * NEONS.length)];
-  const tilt = ((rnd(i, 3) - 0.5) * 7).toFixed(2);
-  const dy = Math.round(rnd(i, 4) * 32);
-  const doodle = rnd(i, 7) < 0.4 ? DOODLES[Math.floor(rnd(i, 8) * DOODLES.length)] : null;
-  const doodleRight = rnd(i, 9) < 0.5;
+  const pin = PINS[Math.floor(rnd(i, 5) * PINS.length)];
+  const stamp = STAMPS[Math.floor(rnd(i, 6) * STAMPS.length)];
+  const tilt = ((rnd(i, 3) - 0.5) * 5).toFixed(2);
+  const dy = Math.round(rnd(i, 4) * 26);
+  const doodle = rnd(i, 7) < 0.3 ? DOODLES[Math.floor(rnd(i, 8) * DOODLES.length)] : null;
+  const taped = rnd(i, 9) < 0.45;
   const year = projectYear(project);
-  const initials = project.title.split(':')[0].split(' ').map((w) => w[0]).join('').slice(0, 3);
+  const colour = categoryColour(project.category);
   const short = project.title.split(':')[0];
+  const sub = project.title.includes(':') ? project.title.split(':').slice(1).join(':').trim() : null;
+  const initials = short.split(' ').map((w) => w[0]).join('').slice(0, 3);
 
-  const titleClass =
-    kind === 'stencil' ? 'text-[22px] leading-none'
-    : kind === 'polaroid' ? 'text-[22px] leading-tight'
-    : 'font-display text-[16px] leading-tight';
+  const shot = (
+    <div className={`b-shot ${kind === 'polaroid' ? 'aspect-square' : kind === 'note' ? 'aspect-[16/8]' : 'aspect-[16/10]'} ${kind === 'postcard' ? 'rounded-[2px]' : ''}`}>
+      {project.image_url ? (
+        <img src={project.image_url} alt={project.title} loading="lazy" />
+      ) : (
+        <div className="grid h-full place-items-center" style={{ background: `rgb(${signColourHex[colour]})` }}>
+          <span className="type-3d ink text-[40px]">{initials}</span>
+        </div>
+      )}
+    </div>
+  );
 
-  const bodyText = kind === 'sticker' ? 'text-white/85' : kind === 'stencil' ? 'text-white/70' : 'text-[#1c1612]/75';
+  const meta = (
+    <div className="flex items-center gap-2">
+      <span className={`b-chip ${colour}`}>{project.category}</span>
+      {project.status && <span className="text-[11px] capitalize text-[#1c1612]/60">{project.status}</span>}
+      {year && <span className="ml-auto font-mono text-[10.5px] text-[#1c1612]/55">{year}</span>}
+    </div>
+  );
 
   return (
     <Link
       to={`/projects/${project.id}`}
-      className="g-card"
+      className="b-card"
       style={{ '--tilt': `${tilt}deg`, '--dy': `${dy}px` } as React.CSSProperties}
     >
-      {/* Stuck-on bits */}
-      {kind === 'poster' && <span className="g-tape" style={{ left: `${18 + rnd(i, 10) * 50}%`, transform: `rotate(${(rnd(i, 11) - 0.5) * 14}deg)` }} />}
-      {kind === 'polaroid' && <span className="g-pin" />}
-      {project.is_featured && rnd(i, 12) < 0.6 && <Crown />}
-      {project.website_url && rnd(i, 13) < 0.45 && <span className="g-live">LIVE</span>}
+      {taped
+        ? <span className="b-tape" style={{ left: `${16 + rnd(i, 10) * 52}%`, transform: `rotate(${(rnd(i, 11) - 0.5) * 12}deg)` }} />
+        : <span className="b-pin" style={{ '--pin': pin, left: `${30 + rnd(i, 10) * 40}%` } as React.CSSProperties} />}
+      {project.is_featured && <span className="b-ribbon">Featured</span>}
+      {project.website_url && rnd(i, 13) < 0.4 && <span className="b-live">LIVE</span>}
       {doodle && (
-        <span
-          className="g-doodle text-[20px]"
-          style={doodleRight ? { right: -6, bottom: 14, transform: `rotate(${6 + rnd(i, 14) * 10}deg)` } : { left: -8, top: '40%', transform: `rotate(${-14 + rnd(i, 14) * 8}deg)` }}
-        >
+        <span className="b-doodle text-[15px]" style={{ right: -10, bottom: 18, transform: `rotate(${4 + rnd(i, 14) * 8}deg)` }}>
           {doodle}
         </span>
       )}
 
-      <article
-        className={`g-${kind}`}
-        style={{ '--fill': fill, '--neon': neon } as React.CSSProperties}
-      >
-        <div className={`g-shot ${kind === 'polaroid' ? 'aspect-square' : 'aspect-[16/10]'}`}>
-          {project.image_url ? (
-            <img src={project.image_url} alt={project.title} loading="lazy" />
-          ) : (
-            <div className="grid h-full place-items-center" style={{ background: fill }}>
-              <span className="type-3d ink text-[44px]">{initials}</span>
-            </div>
-          )}
-        </div>
+      {kind === 'postcard' && (
+        <article className="b-postcard">
+          <span className="b-stamp"><span style={{ '--stamp': stamp } as React.CSSProperties}>{year ?? 'POST'}</span></span>
+          <span className="b-postmark">MEERUT</span>
+          {shot}
+          <div className="pt-3">
+            {meta}
+            <h2 className="mt-2 font-display text-[15px] leading-tight">{short}</h2>
+            {sub && <p className="mt-0.5 text-[12.5px] text-[#1c1612]/70">{sub}</p>}
+            <p className="mt-2 text-[13.5px] leading-relaxed text-[#1c1612]/75 line-clamp-2">{project.description}</p>
+            <p className="mt-3 flex items-center justify-between font-display text-[10.5px] uppercase tracking-wide text-[rgb(var(--sign-green))]">
+              Case study <Icon.ArrowRight size={13} />
+            </p>
+          </div>
+        </article>
+      )}
 
-        <div className={kind === 'polaroid' ? 'px-1 pt-3' : 'px-1 pt-3.5'}>
-          <div className="flex items-center gap-2">
-            <span className="g-chip">{project.category}</span>
-            {year && <span className={`ml-auto font-mono text-[10.5px] ${bodyText}`}>{year}</span>}
+      {kind === 'polaroid' && (
+        <article className="b-polaroid">
+          {shot}
+          <div className="px-1 pt-3">
+            {meta}
+            <h2 className="marker mt-2 text-[21px] leading-tight">{short}</h2>
+            <p className="marker mt-1 text-[13px] text-[#1c1612]/60">open →</p>
           </div>
-          <h2 className={`mt-2.5 ${titleClass}`}>{kind === 'polaroid' || kind === 'stencil' ? short : project.title}</h2>
-          {kind !== 'polaroid' && (
-            <p className={`mt-2 text-[13.5px] leading-relaxed line-clamp-2 ${bodyText}`}>{project.description}</p>
-          )}
-          <div className={`mt-3 flex items-center justify-between text-[11px] ${kind === 'polaroid' ? 'marker text-[14px]' : 'font-display uppercase tracking-wide'} ${bodyText}`}>
-            <span>{kind === 'polaroid' ? 'open →' : 'Case study'}</span>
-            {kind !== 'polaroid' && <Icon.ArrowRight size={14} />}
+        </article>
+      )}
+
+      {kind === 'ticket' && (
+        <article className="b-ticket">
+          <div className="flex items-center justify-between font-display text-[10px] uppercase tracking-wide text-[#1c1612]/60">
+            <span>Admit one</span>
+            <span>Nº {String(project.id).padStart(3, '0')}</span>
           </div>
-        </div>
-      </article>
+          <div className="mt-2">{shot}</div>
+          <div className="b-tear" />
+          {meta}
+          <h2 className="mt-2 font-display text-[15px] leading-tight">{short}</h2>
+          {sub && <p className="mt-0.5 text-[12.5px] text-[#1c1612]/70">{sub}</p>}
+          <p className="mt-2 text-[13.5px] leading-relaxed text-[#1c1612]/75 line-clamp-2">{project.description}</p>
+        </article>
+      )}
+
+      {kind === 'note' && (
+        <article className="b-note">
+          {meta}
+          <h2 className="mt-2 font-display text-[15px] leading-tight">{short}</h2>
+          {sub && <p className="mt-0.5 text-[12.5px] text-[#1c1612]/70">{sub}</p>}
+          <p className="mt-2 text-[13.5px] leading-[26px] text-[#1c1612]/75 line-clamp-3">{project.description}</p>
+          <div className="mt-3">{shot}</div>
+          <p className="marker mt-3 text-[14px] text-[#1c1612]/60">see it →</p>
+        </article>
+      )}
     </Link>
   );
 };
-
-const WALL_TAGS = [
-  { text: 'ABHI', style: { top: '2%', left: '-3%', fontSize: 'clamp(90px, 15vw, 200px)', transform: 'rotate(-7deg)' } },
-  { text: 'SHIP IT', style: { top: '42%', right: '-4%', fontSize: 'clamp(70px, 11vw, 150px)', transform: 'rotate(5deg)' } },
-  { text: '2026', style: { bottom: '3%', left: '22%', fontSize: 'clamp(80px, 13vw, 170px)', transform: 'rotate(-3deg)' } },
-];
 
 export const ProjectsList: React.FC = () => {
   const { data: projects } = useProjects();
@@ -147,7 +171,7 @@ export const ProjectsList: React.FC = () => {
   const live = (projects ?? []).filter((p) => p.website_url).length;
 
   return (
-    // overflow-x-clip: the full-bleed wall uses 100vw, which includes the scrollbar on Windows
+    // overflow-x-clip: the full-bleed board uses 100vw, which includes the scrollbar on Windows
     <div className="relative overflow-x-clip">
       <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 md:px-8 md:pt-36">
         <Reveal>
@@ -156,32 +180,29 @@ export const ProjectsList: React.FC = () => {
           </Link>
           <div className="mt-8 flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="marker text-[18px] text-white drop-shadow-[2px_2px_0_rgba(0,0,0,0.45)] -rotate-2 inline-block">points of interest ↓</p>
-              <h1 className="spray-title mt-1 text-[48px] md:text-[84px]">
-                <span className="drips">All projects</span>
-              </h1>
+              <p className="font-display text-[11px] uppercase tracking-[0.22em] text-white drop-shadow-[0_2px_0_rgba(0,0,0,0.45)]">Points of interest</p>
+              <h1 className="type-3d brown big mt-2 text-[40px] leading-[1] md:text-[64px]">All projects</h1>
             </div>
-            <div className="flex gap-3 pb-2">
-              <span className="slap on" style={{ '--r': '-5deg' } as React.CSSProperties}>{filteredProjects.length} {filteredProjects.length === 1 ? 'stop' : 'stops'}</span>
-              <span className="slap" style={{ '--r': '4deg' } as React.CSSProperties}>{live} live</span>
+            <div className="sign sign-green !m-0 drop-in">
+              <h2 className="sign-title">{filteredProjects.length} {filteredProjects.length === 1 ? 'stop' : 'stops'}</h2>
+              <span className="sign-meta">{live} live</span>
             </div>
           </div>
-          <p className="g-poster marker mt-8 inline-block max-w-xl -rotate-1 !px-5 !py-4 !pb-7 text-[17px] leading-snug">
-            Hospital tools, a legal platform, ERPs, client websites and the small utilities I built for myself. The featured ones have billboards on the home page road; everything else is on this wall.
+          <p className="card-paper mt-6 max-w-2xl px-5 py-4 text-[15.5px] leading-relaxed text-ink/85">
+            Everything I've shipped: web platforms, ERPs, APIs, mobile apps, AI tools and client sites. The featured ones have billboards on the home-page road; the whole lot is pinned up here.
           </p>
         </Reveal>
 
         {categories.length > 0 && (
           <Reveal delay={100}>
-            <div className="-mx-4 mt-8 flex gap-2.5 overflow-x-auto px-4 py-3 [scrollbar-width:none]">
-              {filters.map((category, ci) => {
+            <div className="mt-8 flex flex-wrap gap-2">
+              {filters.map((category) => {
                 const active = selectedCategory === category;
                 return (
                   <button
                     key={category ?? 'all'}
                     onClick={() => setSelectedCategory(category)}
-                    className={`slap press shrink-0 ${active ? 'on' : ''}`}
-                    style={{ '--r': `${((rnd(ci, 20) - 0.5) * 8).toFixed(1)}deg` } as React.CSSProperties}
+                    className={`chip-sign press !px-3 !py-2 !text-[10.5px] ${active ? 'green' : 'paper'}`}
                   >
                     {category ?? `All ${projects?.length ?? ''}`}
                   </button>
@@ -191,16 +212,9 @@ export const ProjectsList: React.FC = () => {
           </Reveal>
         )}
 
-        <div className="wall mt-6">
-          {WALL_TAGS.map((t) => (
-            <span key={t.text} className="wall-tag" style={t.style} aria-hidden="true">{t.text}</span>
-          ))}
-          {/* Pools of lamp light on the bricks at night */}
-          <span className="wall-lamp" style={{ left: '8%' }} aria-hidden="true" />
-          <span className="wall-lamp" style={{ left: '58%' }} aria-hidden="true" />
-
+        <div className="board mt-14">
           {filteredProjects.length === 0 ? (
-            <p className="g-poster marker relative mx-auto max-w-md p-10 text-center text-[20px]">Nothing on the wall for this one yet.</p>
+            <p className="b-note marker relative mx-auto max-w-md p-8 text-center text-[20px]">Nothing pinned up for this one yet.</p>
           ) : (
             <div className="relative grid grid-cols-1 gap-x-7 gap-y-12 sm:grid-cols-2 lg:grid-cols-6 lg:[grid-auto-flow:dense]">
               {filteredProjects.map((project, index) => (
@@ -209,7 +223,7 @@ export const ProjectsList: React.FC = () => {
                   delay={(index % 4) * 80}
                   className={rnd(index, 2) < 0.3 ? 'lg:col-span-3' : 'lg:col-span-2'}
                 >
-                  <WallCard project={project} index={index} />
+                  <BoardCard project={project} index={index} />
                 </Reveal>
               ))}
             </div>

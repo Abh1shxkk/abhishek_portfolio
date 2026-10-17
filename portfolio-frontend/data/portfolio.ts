@@ -8,7 +8,7 @@ export const PROFILE_DATA: Profile = {
   id: 1,
   full_name: 'Abhishek Chauhan',
   title: 'Full Stack Developer',
-  tagline: 'Laravel, React and AI-assisted tools that run in production for a university, its hospital and 100+ colleges.',
+  tagline: 'I build whatever the job needs: web platforms, ERPs, REST APIs, mobile apps and AI tools, and keep them running in production.',
   bio: 'PHP and Full Stack Developer at Subharti University, building Laravel, Node.js and React systems, ERPs and AI-assisted tools that run in production.',
   summary:
     'Computer Science graduate (B.Tech, IIMT University, 2025) and Full Stack Developer working on production systems since 2025. ' +
@@ -595,10 +595,10 @@ export const JOURNEY: Milestone[] = [
     id: 'ai-tools',
     when: '2026',
     title: 'AI tools in production',
-    place: 'Hospital, legal office, exams',
+    place: 'Across the university',
     period: 'Aug – Oct 2026',
     role: 'Full Stack and AI Developer',
-    detail: 'Four tools for the hospital, the legal office and the examinations department, each with a human checking the AI.',
+    detail: 'Four AI-assisted tools for four different departments, from records and legal work to exams, each with a human checking the AI.',
     bullets: [
       'OPD Scan QC: OpenCV quality scoring for scanned records, with AI transcription and human review',
       'OPD Scribe: consultations in Indian languages turned into transcripts, prescriptions and SOAP notes',
