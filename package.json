@@ -1,0 +1,12 @@
+{
+  "name": "abhishek-portfolio-root",
+  "private": true,
+  "description": "Shortcuts so the main commands also work from the repository root. The app lives in portfolio-frontend/.",
+  "scripts": {
+    "dev": "npm run dev --prefix portfolio-frontend",
+    "build": "npm run build --prefix portfolio-frontend",
+    "deploy": "npm run deploy --prefix portfolio-frontend",
+    "deploy:secret": "npm run deploy:secret --prefix portfolio-frontend",
+    "login": "npm exec --prefix portfolio-frontend -- wrangler login"
+  }
+}
