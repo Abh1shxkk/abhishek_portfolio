@@ -235,7 +235,7 @@ export const ProjectsList: React.FC = () => {
             </div>
           </div>
           <p className="card-paper mt-6 max-w-2xl px-5 py-4 text-[15.5px] leading-relaxed text-ink/85">
-            Everything I've shipped: web platforms, ERPs, APIs, mobile apps, AI tools and client sites. The featured ones have billboards on the home-page road; the whole lot is pinned up here.
+            Client websites and stores, web apps with admin panels, AI assistants and a few tools of my own. The featured ones have billboards on the home-page road; the whole lot is pinned up here.
           </p>
         </Reveal>
 

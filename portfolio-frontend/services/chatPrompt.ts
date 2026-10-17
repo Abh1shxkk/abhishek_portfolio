@@ -36,7 +36,7 @@ Professional Links:
 
 About ${profile.full_name}:
 ${profile.bio || profile.summary || ''}
-💼 Available for: ${(profile.open_to ?? ['Freelance projects']).join(', ')} (web apps, Laravel, ERPs, APIs, AI tools)
+💼 Available for: ${(profile.open_to ?? ['Freelance projects']).join(', ')} (websites, web apps, Laravel, WordPress, APIs, AI tools)
 
 Technical Skills:
 ${skillsText}
@@ -45,7 +45,7 @@ Work Experience:
 ${experiences.map(e => `• ${publicTitle(e.position)} at ${e.company} (${e.start_date} - ${e.end_date || 'Present'})\n  ${e.description || ''}\n  Technologies: ${e.technologies?.join(', ') || 'N/A'}`).join('\n\n')}
 
 Featured Projects:
-${projects.slice(0, 5).map(p => `• ${p.title} - ${p.description || ''}\n  Tech: ${p.technologies?.join(', ') || 'N/A'}`).join('\n\n')}
+${projects.filter(p => p.is_featured).map(p => `• ${p.title} - ${p.description || ''}\n  Tech: ${p.technologies?.join(', ') || 'N/A'}`).join('\n\n')}
 
 Education:
 ${education.map(e => `• ${e.degree}, ${e.institution} (${e.end_date || e.start_date})`).join('\n')}

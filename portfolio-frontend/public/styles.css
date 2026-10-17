@@ -718,42 +718,180 @@ body {
 .dark .day-night .stars { opacity: 0.9; }
 
 /* ============================================
-   FOOTER: a rest-stop board at the end of the road
+   FOOTER: a rest stop at the end of the road
+   One paper card on the asphalt: a postcard home on the left, the exit sign on the right, and a
+   strip of road underneath where the little car parks at the flag once you reach the bottom.
    ============================================ */
 .rest-stop {
   position: relative;
   background: rgb(var(--asphalt));
   color: #f1ebe0;
 }
+.rest-stop .verge {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 14px;
+  background: linear-gradient(180deg, #6f9a52, #557a3e);
+}
+.dark .rest-stop .verge { background: linear-gradient(180deg, #2a4a2e, #1f3a24); }
+/* Road edge line just under the grass */
 .rest-stop::before {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
+  top: 14px;
   height: 6px;
   background:
-    linear-gradient(90deg, rgb(var(--sign-yellow)) 0 14px, transparent 14px 28px) 0 0 / 28px 2px repeat-x,
-    linear-gradient(180deg, rgb(255 255 255 / 0.12), transparent);
+    linear-gradient(90deg, rgb(var(--sign-yellow)) 0 14px, transparent 14px 28px) 0 2px / 28px 2px repeat-x,
+    linear-gradient(180deg, rgb(0 0 0 / 0.35), transparent);
 }
-.rest-stop .lane {
-  height: 2px;
-  background-image: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.55) 0 18px, transparent 18px 32px);
+
+/* The postcard: cream card, photo stamp and postmark top right, message left, address right */
+.fpost {
+  position: relative;
+  height: 100%;
+  padding: 18px 18px 16px;
+  border-radius: 3px;
+  color: #1c1612;
+  background: #fbf6ea;
+  background-image: linear-gradient(115deg, rgb(255 255 255 / 0.4), transparent 35%, rgb(0 0 0 / 0.03) 60%, transparent);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.1), 0 14px 22px -14px rgb(0 0 0 / 0.55);
 }
-.mile-marker {
+/* The photo stamp: perforation only on the white frame (as a background, not a mask), photo inset */
+.fpost .b-stamp {
+  width: 58px;
+  height: 68px;
+  padding: 5px;
+  -webkit-mask: none;
+  mask: none;
+  background: radial-gradient(circle at 3.5px 3.5px, transparent 2.2px, #fff 2.5px) 0 0 / 7px 7px;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.25));
+}
+.fpost .b-stamp > span { background: #fff; }
+.fpost .b-stamp img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.fpost .b-postmark { top: 6px; right: 58px; }
+.fpost-addr { font-family: "JetBrains Mono", monospace; font-size: 12px; }
+.fpost-addr > * {
+  display: block;
+  padding: 5px 0 4px;
+  border-bottom: 1px solid rgb(28 22 18 / 0.28);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fpost-addr a:hover { color: rgb(var(--sign-blue)); }
+@media (min-width: 768px) {
+  .fpost-addr { border-left: 2px dashed rgb(28 22 18 / 0.22); padding-left: 18px; }
+}
+
+/* The exit sign: one green plate, two columns of exits */
+.exit-board {
+  position: relative;
+  height: 100%;
+  border-radius: 8px;
+  padding: 14px 14px 12px;
+  color: #fff;
+  background:
+    linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 0.1) 38%, transparent 52%),
+    rgb(var(--sign-green));
+  box-shadow: inset 0 0 0 2px rgb(var(--sign-green)), inset 0 0 0 4px rgb(255 255 255 / 0.88), 0 3px 0 rgb(0 0 0 / 0.28), 0 14px 20px -14px rgb(0 0 0 / 0.7);
+}
+.exit-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 4px 8px;
+  border-bottom: 2px solid rgb(255 255 255 / 0.55);
+  font-family: "Bungee", Impact, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 0.25);
+}
+.exit-head small { font-family: "JetBrains Mono", monospace; font-size: 10px; opacity: 0.85; }
+.exit-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; margin-top: 6px; }
+.exit-group small {
+  display: block;
+  padding: 8px 6px 3px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.exit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px;
+  border-radius: 4px;
+  font-family: "Bungee", Impact, sans-serif;
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  color: #fff;
+  text-align: left;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 0.25);
+  transition: background-color 0.2s ease, transform 0.25s var(--ease-out);
+}
+.exit-row:hover { background: rgb(255 255 255 / 0.14); transform: translateX(3px); }
+.exit-row .exit-no {
   display: inline-grid;
   place-items: center;
-  width: 44px;
-  padding: 6px 0 8px;
-  border-radius: 4px 4px 2px 2px;
-  background: rgb(var(--sign-green));
-  color: #fff;
-  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.85), inset 0 0 0 2.5px rgb(var(--sign-green)), 0 2px 0 rgb(0 0 0 / 0.3);
-  font-family: "Bungee", Impact, sans-serif;
-  font-size: 12px;
-  line-height: 1;
+  min-width: 24px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: #fff;
+  color: rgb(var(--sign-green));
+  font-size: 9px;
+  text-shadow: none;
 }
-.mile-marker small { font-family: "JetBrains Mono", monospace; font-size: 7px; letter-spacing: 0.15em; opacity: 0.9; margin-bottom: 4px; }
+.exit-row .exit-arrow { margin-left: auto; opacity: 0.7; transition: transform 0.25s var(--ease-out); }
+.exit-row:hover .exit-arrow { transform: translateX(3px); opacity: 1; }
+
+/* The strip of road under the card */
+.f-road {
+  position: relative;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #46474f;
+  box-shadow: inset 0 2px 0 rgb(255 255 255 / 0.08), inset 0 -2px 0 rgb(0 0 0 / 0.3);
+}
+.dark .f-road { background: #2b2c33; }
+.f-road::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background-image: repeating-linear-gradient(90deg, rgb(var(--sign-yellow)) 0 16px, transparent 16px 30px);
+  opacity: 0.9;
+}
+.f-car {
+  position: absolute;
+  left: 8px;
+  top: 5px;
+  width: 46px;
+  height: 22px;
+  filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.45));
+  transition: transform 0.4s var(--ease-out);
+  will-change: transform;
+}
+.f-car svg { display: block; }
+.f-flag { position: absolute; right: 12px; top: 4px; width: 2px; height: 24px; background: #f1ebe0; }
+.f-flag::after {
+  content: "";
+  position: absolute;
+  left: 2px; top: 0;
+  width: 16px; height: 11px;
+  background: repeating-conic-gradient(#1c1612 0 25%, #fff 0 50%) 0 0 / 8px 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .f-car, .exit-row { transition: none; }
+}
 
 /* ============================================
    INNER PAGES: a flat low-poly backdrop drawn in CSS
@@ -1149,87 +1287,6 @@ body {
   .b-live { animation: none; }
   .b-card, .b-card:hover { transition: none; }
 }
-
-/* ============================================
-   FOOTER: the end of the road
-   An asphalt verge with a big highway exit sign for the links.
-   ============================================ */
-.exit-board {
-  position: relative;
-  border-radius: 10px;
-  padding: 18px 20px 16px;
-  color: #fff;
-  background: rgb(var(--sign-green));
-  box-shadow: inset 0 0 0 3px rgb(var(--sign-green)), inset 0 0 0 6px rgb(255 255 255 / 0.9), 0 4px 0 rgb(0 0 0 / 0.3), 0 20px 30px -18px rgb(0 0 0 / 0.7);
-}
-.exit-board.brown { background: rgb(var(--sign-brown)); box-shadow: inset 0 0 0 3px rgb(var(--sign-brown)), inset 0 0 0 6px rgb(255 255 255 / 0.9), 0 4px 0 rgb(0 0 0 / 0.3), 0 20px 30px -18px rgb(0 0 0 / 0.7); }
-.exit-board.blue { background: rgb(var(--sign-blue)); box-shadow: inset 0 0 0 3px rgb(var(--sign-blue)), inset 0 0 0 6px rgb(255 255 255 / 0.9), 0 4px 0 rgb(0 0 0 / 0.3), 0 20px 30px -18px rgb(0 0 0 / 0.7); }
-.exit-board .exit-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0 4px 10px;
-  border-bottom: 2px solid rgb(255 255 255 / 0.55);
-  font-family: "Bungee", Impact, sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  text-shadow: 0 2px 0 rgb(0 0 0 / 0.25);
-}
-.exit-board .exit-head small { font-family: "JetBrains Mono", monospace; font-size: 10px; opacity: 0.85; }
-.exit-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 9px 6px;
-  border-bottom: 1px solid rgb(255 255 255 / 0.18);
-  font-family: "Bungee", Impact, sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.03em;
-  color: #fff;
-  text-align: left;
-  text-shadow: 0 2px 0 rgb(0 0 0 / 0.25);
-  transition: background-color 0.2s ease, padding-left 0.25s var(--ease-out);
-}
-.exit-row:last-child { border-bottom: 0; }
-.exit-row:hover { background: rgb(255 255 255 / 0.12); padding-left: 12px; }
-.exit-row .exit-no {
-  display: inline-grid;
-  place-items: center;
-  min-width: 34px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 4px;
-  background: #fff;
-  color: rgb(var(--sign-green));
-  font-size: 10px;
-  text-shadow: none;
-}
-.exit-board.brown .exit-row .exit-no { color: rgb(var(--sign-brown)); }
-.exit-row .exit-arrow { margin-left: auto; opacity: 0.8; transition: transform 0.25s var(--ease-out); }
-.exit-row:hover .exit-arrow { transform: translateX(4px); opacity: 1; }
-/* Two posts holding the board up */
-.exit-board::before, .exit-board::after {
-  content: "";
-  position: absolute;
-  bottom: -30px;
-  width: 10px;
-  height: 30px;
-  background: linear-gradient(90deg, #8a8a92, #5a5a62);
-  border-radius: 0 0 2px 2px;
-  z-index: -1;
-}
-.exit-board::before { left: 14%; }
-.exit-board::after { right: 14%; }
-
-.rest-stop .verge {
-  position: absolute;
-  left: 0; right: 0; top: 0;
-  height: 14px;
-  background: linear-gradient(180deg, #6f9a52, #557a3e);
-}
-.dark .rest-stop .verge { background: linear-gradient(180deg, #2a4a2e, #1f3a24); }
 
 /* ============================================
    CHAT: a handheld console with a rocket landing inside it

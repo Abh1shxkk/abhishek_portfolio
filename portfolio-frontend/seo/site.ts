@@ -114,11 +114,11 @@ export const routeMeta = (pathname: string): RouteMeta => {
 
   if (path === '/') {
     const description = clip(
-      `${PROFILE_DATA.title} in Meerut building Laravel, React and AI-assisted systems that run in production: ` +
-        `a university ERP for 100+ colleges, a bilingual RAG assistant and ${PROJECTS_DATA.length} projects in all.`
+      `Web developer and designer in Meerut building fast websites, Laravel and React web apps and AI tools that run in production. ` +
+        `Business websites from ${formatInr(PACKAGES[0].price)}; freelance and contract work across India.`
     );
     return {
-      title: `${NAME} | Laravel & Full Stack Developer, Meerut`,
+      title: `${NAME} | Web Developer & Designer in Meerut`,
       description,
       canonical: `${SITE}/`,
       image: DEFAULT_IMAGE,
@@ -139,11 +139,11 @@ export const routeMeta = (pathname: string): RouteMeta => {
 
   if (path === '/projects') {
     const description = clip(
-      `All ${PROJECTS_DATA.length} projects by ${NAME}: Laravel ERPs, AI and RAG tools, healthcare and legal systems, ` +
-        'client websites and open-source utilities, each with the stack and what it does.'
+      `All ${PROJECTS_DATA.length} projects by ${NAME}: client websites and stores, Laravel and React web apps, ` +
+        'AI and RAG tools, healthcare and legal systems, each with the stack and what it does.'
     );
     return {
-      title: `Projects | Laravel, React & AI apps by ${NAME}`,
+      title: `Projects | Websites, Web Apps & AI Tools by ${NAME}`,
       description,
       canonical: `${SITE}/projects`,
       image: DEFAULT_IMAGE,
@@ -199,7 +199,7 @@ export const routeMeta = (pathname: string): RouteMeta => {
 
   if (path === '/services') {
     const description = clip(
-      `Websites from ${formatInr(PACKAGES[0].price)} with domain and hosting, plus Laravel web apps, ERPs, AI chatbots, APIs and Android apps by ${NAME}, Meerut. Fixed quotes, you own the work.`
+      `Websites from ${formatInr(PACKAGES[0].price)} with domain and hosting, plus landing pages, Laravel web apps, admin panels, AI chatbots, APIs and Android apps by ${NAME}, Meerut. Fixed quotes, you own the work.`
     );
     const url = `${SITE}/services`;
     return {
@@ -237,7 +237,7 @@ export const routeMeta = (pathname: string): RouteMeta => {
 
   if (path === '/meerut') {
     const description = clip(
-      `${NAME} is a web developer based in Meerut who meets clients in person. Business websites from ${formatInr(PACKAGES[0].price)}, plus Laravel apps, ERPs and AI tools for local businesses.`
+      `${NAME} is a web developer based in Meerut who meets clients in person. Business websites from ${formatInr(PACKAGES[0].price)}, plus web apps, admin panels and AI tools for local businesses.`
     );
     const url = `${SITE}/meerut`;
     return {
@@ -276,7 +276,7 @@ export const routeMeta = (pathname: string): RouteMeta => {
   if (path === '/blog' && BLOG_DATA.length) {
     return {
       title: `Blog | ${NAME}`,
-      description: clip(`Notes from real projects by ${NAME}: Laravel, ERPs, AI tools and shipping to production.`),
+      description: clip(`Notes from real projects by ${NAME}: websites, Laravel, AI tools and shipping to production.`),
       canonical: `${SITE}/blog`,
       image: DEFAULT_IMAGE,
       imageAlt: DEFAULT_IMAGE_ALT,
@@ -394,7 +394,7 @@ export const pageBody = (pathname: string): string => {
       contact()
     );
   } else if (path === '/projects') {
-    parts.push(`<header><h1>Projects by ${esc(NAME)}</h1><p>${PROJECTS_DATA.length} projects: web platforms, ERPs, APIs, mobile apps, AI tools and client sites.</p></header>`, projectList(PROJECTS_DATA), contact());
+    parts.push(`<header><h1>Projects by ${esc(NAME)}</h1><p>${PROJECTS_DATA.length} projects: client websites and stores, web apps, APIs, AI tools and side projects.</p></header>`, projectList(PROJECTS_DATA), contact());
   } else if (path.startsWith('/projects/')) {
     const p = findProject(path.split('/')[2]);
     if (p) {
@@ -424,7 +424,7 @@ export const pageBody = (pathname: string): string => {
     }
   } else if (path === '/services') {
     parts.push(
-      `<header><h1>Services and prices</h1><p>Websites for local businesses at fixed prices, and custom web apps, ERPs, AI assistants and Android apps quoted to your scope.</p></header>`,
+      `<header><h1>Services and prices</h1><p>Websites and landing pages at fixed prices, and custom web apps, admin panels, AI assistants and Android apps quoted to your scope.</p></header>`,
       `<section><h2>Website packages</h2>${PACKAGES.map(
         (pk) => `<h3>${esc(pk.name)}: ${esc(formatInr(pk.price))}</h3><p>${esc(pk.pitch)} ${esc(pk.delivery)}.</p><ul>${pk.includes.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`
       ).join('')}<ul>${PACKAGE_TERMS.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></section>`,
@@ -440,7 +440,7 @@ export const pageBody = (pathname: string): string => {
     );
   } else if (path === '/meerut') {
     parts.push(
-      `<header><h1>A web developer you can meet in Meerut</h1><p>I live and work in Meerut. ${esc(MEERUT.inPerson)} Websites for local businesses start at ${esc(formatInr(PACKAGES[0].price))}; custom apps, ERPs and AI tools are quoted to scope.</p></header>`,
+      `<header><h1>A web developer you can meet in Meerut</h1><p>I live and work in Meerut. ${esc(MEERUT.inPerson)} Websites for local businesses start at ${esc(formatInr(PACKAGES[0].price))}; custom web apps, admin panels and AI tools are quoted to scope.</p></header>`,
       `<section><h2>Local track record</h2><ul>${EXPERIENCE_DATA.map((e) => `<li>${esc(publicTitle(e.position))} at ${esc(e.company)}${e.location ? `, ${esc(e.location)}` : ''}. ${esc(e.description)}</li>`).join('')}${
         EDUCATION_DATA[0] ? `<li>${esc(EDUCATION_DATA[0].degree)}, ${esc(EDUCATION_DATA[0].institution)}</li>` : ''
       }</ul></section>`,
@@ -451,7 +451,7 @@ export const pageBody = (pathname: string): string => {
   } else if (path === '/about') {
     parts.push(
       `<header><h1>About ${esc(NAME)}</h1><p>${esc(PROFILE_DATA.title)}, ${esc(PROFILE_DATA.location)}.</p></header>`,
-      `<section><p>${esc(PROFILE_DATA.tagline)}</p><p>${esc(PROFILE_DATA.summary)}</p><p>I take on freelance and contract work: business websites, Laravel web apps, ERPs, APIs and AI assistants.</p></section>`,
+      `<section><p>${esc(PROFILE_DATA.tagline)}</p><p>${esc(PROFILE_DATA.summary)}</p><p>I take on freelance and contract work: websites and landing pages, Laravel web apps, APIs and AI assistants.</p></section>`,
       `<section><h2>Work so far</h2><ul>${EXPERIENCE_DATA.map((e) => `<li>${esc(publicTitle(e.position))}, ${esc(e.company)}</li>`).join('')}</ul></section>`,
       `<section><h2>Tools I use</h2><ul>${Object.entries(SKILLS_GROUPED).map(([g, sk]) => `<li><strong>${esc(g)}:</strong> ${sk.map((x) => esc(x.name)).join(', ')}</li>`).join('')}</ul><p><a href="/services">Services and prices</a> · <a href="/projects">All projects</a></p></section>`,
       contact()

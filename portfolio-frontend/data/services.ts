@@ -89,9 +89,9 @@ export const SERVICES: Service[] = [
     id: 'websites',
     title: 'Business websites',
     price: `From ${inr(8999)}`,
-    summary: 'Fast, mobile-first websites for local businesses and professionals, with enquiries going straight to WhatsApp or email.',
+    summary: 'Designed and built for your business: fast, mobile-first sites for shops, agencies, startups and professionals, with enquiries going straight to WhatsApp or email.',
     includes: ['Fixed-price packages', 'Domain, hosting and SSL sorted', 'Google Maps and basic search setup'],
-    proof: [21, 20, 23, 17],
+    proof: [22, 21, 20, 23],
   },
   {
     id: 'laravel-apps',
@@ -99,15 +99,15 @@ export const SERVICES: Service[] = [
     price: 'Quoted to scope',
     summary: 'Custom web apps with logins, roles, dashboards and workflows: portals, booking systems, marketplaces and internal tools.',
     includes: ['Laravel with MySQL or PostgreSQL', 'Roles, permissions and audit trails', 'Admin panel and reports'],
-    proof: [4, 7, 14],
+    proof: [7, 8, 6],
   },
   {
     id: 'erp-crm',
-    title: 'ERP, CRM and admin panels',
+    title: 'Admin panels, CRM and ERP',
     price: 'Quoted to scope',
     summary: 'Billing, inventory, HR, student and case management systems built around how your team actually works.',
     includes: ['Approvals and multi-step workflows', 'GST invoicing, exports and reports', 'Data migration from Excel or an old system'],
-    proof: [5, 15, 1],
+    proof: [1, 6],
   },
   {
     id: 'ai-chatbots',
@@ -123,7 +123,7 @@ export const SERVICES: Service[] = [
     price: 'Quoted to scope',
     summary: 'REST APIs and connections between the tools you already use: payments, WhatsApp and Telegram, Google, CRMs and spreadsheets.',
     includes: ['Documented REST APIs', 'Payment gateways and webhooks', 'Automations with n8n or custom code'],
-    proof: [12, 19, 16],
+    proof: [12, 16, 21],
   },
   {
     id: 'android-apps',
@@ -139,7 +139,7 @@ export const SERVICES: Service[] = [
     price: 'Quoted to scope',
     summary: 'One focused page for an ad campaign, launch or event, built to load fast and collect leads.',
     includes: ['Lead form or WhatsApp capture', 'Fast on mobile data', 'Ready for Google and Meta ads'],
-    proof: [17],
+    proof: [17, 23],
   },
   {
     id: 'redesign-care',
@@ -147,7 +147,7 @@ export const SERVICES: Service[] = [
     price: 'Quoted to scope',
     summary: 'A fresh, faster version of an existing site, or ongoing updates, fixes, backups and security once it is live.',
     includes: ['Speed and mobile fixes', 'Content and feature updates', 'Backups, renewals and monitoring'],
-    proof: [22, 6, 9],
+    proof: [6, 9, 10],
   },
 ];
 

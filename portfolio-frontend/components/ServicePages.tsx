@@ -158,8 +158,8 @@ export const ServicesPage: React.FC = () => (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 md:px-8 md:pt-36">
       <PageTop eyebrow="Services and prices" title="What I can build for you" colour="green">
         <p className="card-paper mt-6 max-w-3xl px-5 py-4 text-[16px] leading-relaxed text-ink/85">
-          Websites for local businesses at fixed prices, and custom web apps, ERPs, AI assistants and Android apps quoted to your scope.
-          Every project ends with you owning the work, and each service links to a real system I’ve built.
+          Websites and landing pages at fixed prices, and custom web apps, admin panels, AI assistants and Android apps quoted to your scope.
+          Every project ends with you owning the work, and each service links to a real site or system I’ve built.
         </p>
       </PageTop>
 
@@ -268,7 +268,7 @@ export const MeerutPage: React.FC = () => {
   const previous = EXPERIENCE_DATA.find((e) => e !== current);
   const degree = EDUCATION_DATA[0];
   const proof = [
-    current && `${publicTitle(current.position)} at ${current.company}, maintaining the ERP that the university and its 100+ affiliated colleges run on.`,
+    current && `${publicTitle(current.position)} at ${current.company}, on the team that runs the university's websites and central systems.`,
     previous && `${publicTitle(previous.position)} at ${previous.company}, Meerut, building websites, CRMs and LMS platforms for clients.`,
     degree && `B.Tech in ${degree.field_of_study ?? 'Computer Science'} from ${degree.institution}, Meerut.`,
   ].filter(Boolean) as string[];
@@ -278,7 +278,7 @@ export const MeerutPage: React.FC = () => {
       <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 md:px-8 md:pt-36">
         <PageTop eyebrow="Meerut, Uttar Pradesh" title="A web developer you can meet in Meerut" colour="red">
           <p className="card-paper mt-6 max-w-3xl px-5 py-4 text-[16px] leading-relaxed text-ink/85">
-            I live and work in Meerut. {MEERUT.inPerson} Websites for local businesses start at {formatInr(PACKAGES[0].price)}; custom apps, ERPs and AI tools are quoted to scope.
+            I live and work in Meerut. {MEERUT.inPerson} Websites for local businesses start at {formatInr(PACKAGES[0].price)}; custom web apps, admin panels and AI tools are quoted to scope.
           </p>
         </PageTop>
 
@@ -366,8 +366,8 @@ export const AboutPage: React.FC = () => {
                   <p className="text-[15.5px] leading-[26px] text-[#1c1612]">{profile?.tagline}</p>
                   <p className="mt-[26px] text-[15px] leading-[26px] text-[#1c1612]/85">{profile?.summary}</p>
                   <p className="mt-[26px] text-[15px] leading-[26px] text-[#1c1612]/85">
-                    I take on freelance and contract work: business websites, Laravel web apps, ERPs, APIs and AI assistants, and I care about the parts that keep a
-                    system running after launch: backups, security, a clear handover and support.
+                    I take on freelance and contract work: websites and landing pages, Laravel web apps, APIs and AI assistants, and I care about the parts that keep a
+                    site running after launch: backups, security, a clear handover and support.
                   </p>
                 </article>
               </Pinned>

@@ -30,10 +30,6 @@ export const ProjectDetailPage: React.FC = () => {
   }, [project, allProjects]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [id]);
-
-  useEffect(() => {
     if (!lightbox) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setLightbox(null);
     window.addEventListener('keydown', onKey);

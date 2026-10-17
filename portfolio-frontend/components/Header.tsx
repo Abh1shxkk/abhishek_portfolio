@@ -17,8 +17,10 @@ const NAV_ITEMS: NavItem[] = [
   { id: SectionId.Journey, label: 'Journey', section: SectionId.Journey },
   { id: SectionId.Skills, label: 'Skills', section: SectionId.Skills },
   { id: SectionId.Projects, label: 'Work', section: SectionId.Projects },
-  { id: 'projects', label: 'All projects', route: '/projects' },
+  { id: 'projects', label: 'Projects', route: '/projects' },
   { id: 'services', label: 'Services', route: '/services' },
+  { id: 'meerut', label: 'Meerut', route: '/meerut' },
+  { id: 'about', label: 'About', route: '/about' },
   // The blog link only appears once there is something to read
   ...(BLOG_DATA.length > 0 ? [{ id: 'blog', label: 'Blog', route: '/blog' }] : []),
 ];
@@ -109,8 +111,8 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, theme, onToggleTh
           <span className="font-display text-[12px] uppercase tracking-[0.12em]">{firstName}</span>
         </button>
 
-        {/* Desktop nav: one green sign */}
-        <nav className="plate plate-green relative hidden items-center px-1.5 py-1 md:flex" onMouseLeave={() => setHovered(null)}>
+        {/* Desktop nav: one green sign. Seven exits need a wide screen, so tablets get the menu card. */}
+        <nav className="plate plate-green relative hidden items-center px-1.5 py-1 lg:flex" onMouseLeave={() => setHovered(null)}>
           <span aria-hidden="true" className="nav-pill" style={{ left: pill.left, width: pill.width, opacity: pill.visible ? 1 : 0 }} />
           {NAV_ITEMS.map((item) => (
             <button
@@ -141,14 +143,14 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, theme, onToggleTh
 
           <button
             onClick={() => scrollToSection(SectionId.Contact)}
-            className="btn-sign red press hidden items-center gap-2 rounded-md px-3.5 py-2 font-display text-[11px] uppercase tracking-wide md:inline-flex"
+            className="btn-sign red press hidden items-center gap-2 rounded-md px-3.5 py-2 font-display text-[11px] uppercase tracking-wide lg:inline-flex"
           >
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-white" />
             Let's talk
           </button>
 
           <button
-            className="plate plate-green grid h-9 w-9 place-items-center md:hidden press"
+            className="plate plate-green grid h-9 w-9 place-items-center lg:hidden press"
             onClick={() => setIsMenuOpen((o) => !o)}
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
@@ -162,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, theme, onToggleTh
 
       {/* Mobile menu: a paper card hanging under the gantry */}
       <div
-        className={`card-paper pointer-events-auto mx-auto mt-3 max-w-6xl origin-top p-3 transition-all duration-300 ease-out md:hidden
+        className={`card-paper pointer-events-auto mx-auto mt-3 max-w-6xl origin-top p-3 transition-all duration-300 ease-out lg:hidden
           ${isMenuOpen ? 'translate-y-0 scale-100 opacity-100' : 'pointer-events-none -translate-y-2 scale-95 opacity-0'}`}
       >
         <nav className="flex flex-col">

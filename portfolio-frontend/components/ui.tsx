@@ -278,6 +278,7 @@ export const Icon = {
   ArrowDown: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M12 5v14" /><path d="m6 13 6 6 6-6" /></>),
   ArrowUp: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M12 19V5" /><path d="m6 11 6-6 6 6" /></>),
   ArrowUpRight: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M7 17 17 7" /><path d="M8 7h9v9" /></>),
+  Uturn: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M7 21V10a5 5 0 0 1 10 0v8" /><path d="m13 14 4 4 4-4" /></>),
   Download: ({ size = 16, className }: IconProps) => stroke(size, className, <><path d="M12 4v11" /><path d="m7 10 5 5 5-5" /><path d="M5 20h14" /></>),
   Mail: ({ size = 16, className }: IconProps) => stroke(size, className, <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></>),
   Copy: ({ size = 16, className }: IconProps) => stroke(size, className, <><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></>),

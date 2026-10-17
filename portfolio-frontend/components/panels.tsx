@@ -4,6 +4,7 @@ import { SectionId, Skill } from '../types';
 import { useProfile } from '../hooks/usePortfolio';
 import { resumeService } from '../services/portfolioService';
 import { EXPERIENCE_DATA, JOURNEY, PROJECTS_DATA, SKILLS_DATA, SKILL_GROUP_NOTES, projectEnquiryHref } from '../data/portfolio';
+import { whatsappHref } from '../data/services';
 import { DistrictKey, FEATURED, SKILL_GROUPS, useWorld } from './World';
 import { CountUp, Icon, Magnetic, SlipArrow, Spotlight, useCopy, useDarkMode, useLocalTime } from './ui';
 
@@ -132,10 +133,12 @@ export const HeroPanel: React.FC = () => {
     { label: 'X', href: profile?.twitter_url, icon: <Icon.X size={14} /> },
   ].filter((s) => s.href);
 
+  const sites = PROJECTS_DATA.filter((p) => /website|commerce|web application/i.test(p.category ?? '')).length;
+  const aiTools = PROJECTS_DATA.filter((p) => /\bai\b/i.test(p.category ?? '')).length;
   const stats = [
     { value: `${PROJECTS_DATA.length}`, label: 'projects shipped' },
-    { value: `${PROJECTS_DATA.filter((p) => p.website_url).length}`, label: 'live in production' },
-    { value: '100+', label: 'colleges on the ERP' },
+    { value: `${sites}`, label: 'websites & web apps' },
+    { value: `${aiTools}`, label: 'AI tools in daily use' },
     { value: `${SKILLS_DATA.length}`, label: 'tools in the stack' },
   ];
 
@@ -161,7 +164,7 @@ export const HeroPanel: React.FC = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[15px] leading-snug text-ink">
-                  {profile?.tagline} Right now that includes the systems a university and its 100+ colleges run on, at <span className="font-semibold">{job?.company}</span>.
+                  {profile?.tagline} Lately: agency and startup websites on WordPress, Laravel platforms with admin panels, and AI assistants in daily use at <span className="font-semibold">{job?.company}</span>.
                 </p>
                 <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink/70">
                   <span className="inline-flex items-center gap-1.5">
@@ -290,11 +293,11 @@ const SLUGS: Record<string, string> = {
   MySQL: 'mysql', PostgreSQL: 'postgresql', MariaDB: 'mariadb', MongoDB: 'mongodb', Redis: 'redis',
   JavaScript: 'javascript', TypeScript: 'typescript', HTML: 'html5', CSS: 'css', React: 'react', 'Next.js': 'nextdotjs', 'Vue.js': 'vuedotjs',
   Angular: 'angular', 'Alpine.js': 'alpinedotjs', jQuery: 'jquery', 'Tailwind CSS': 'tailwindcss', Bootstrap: 'bootstrap', 'shadcn/ui': 'shadcnui',
-  'Three.js': 'threedotjs', 'Framer Motion': 'framer', Vite: 'vite',
+  'Three.js': 'threedotjs', 'Framer Motion': 'framer', Vite: 'vite', Figma: 'figma',
   Claude: 'claude', Gemini: 'googlegemini', OpenCV: 'opencv', ElevenLabs: 'elevenlabs', Celery: 'celery', n8n: 'n8n',
   Flutter: 'flutter', Dart: 'dart', Expo: 'expo', Supabase: 'supabase', 'Telegram Bots': 'telegram', WordPress: 'wordpress', WooCommerce: 'woocommerce',
-  Moodle: 'moodle', Joomla: 'joomla', Solidity: 'solidity',
-  Docker: 'docker', 'Google Cloud': 'googlecloud', Nginx: 'nginx', Caddy: 'caddy', Linux: 'linux', Git: 'git', 'GitHub Actions': 'githubactions',
+  Elementor: 'elementor', Moodle: 'moodle', Joomla: 'joomla',
+  Docker: 'docker', Cloudflare: 'cloudflare', 'Google Cloud': 'googlecloud', Nginx: 'nginx', Caddy: 'caddy', Linux: 'linux', Git: 'git', 'GitHub Actions': 'githubactions',
   'GitLab CI/CD': 'gitlab', cPanel: 'cpanel', Hostinger: 'hostinger', Vercel: 'vercel', Render: 'render', Vitest: 'vitest',
 };
 const MONO = new Set(['express', 'nextdotjs', 'vercel', 'shadcnui', 'threedotjs', 'github', 'githubactions', 'expo', 'claude']);
@@ -429,6 +432,7 @@ export const ContactPanel: React.FC = () => {
   const { register } = useWorld();
   const { copied, copy } = useCopy();
   const time = useLocalTime(profile?.time_zone ?? 'Asia/Kolkata');
+  const wa = whatsappHref();
 
   const rows = [
     { label: 'Email', value: profile?.email, href: profile?.email ? `mailto:${profile.email}` : null },
@@ -452,15 +456,20 @@ export const ContactPanel: React.FC = () => {
           <Card district="contact" sign="red" title="End of the road" meta={`${time} IST`}>
             <h3 className="type-3d red text-[24px] md:text-[30px]">Let's build the next stop</h3>
             <p className="mt-3 text-[14.5px] leading-relaxed text-ink/85">
-              Open to full-time roles, contracts and freelance work on web platforms, ERPs and AI-assisted tools. Email is the fastest way to reach me; I usually reply the same day.
+              Taking freelance and contract work: websites, web apps, APIs and AI tools. Send a short brief by email or WhatsApp and you get a clear quote in writing, usually the same day.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {profile?.email && (
                 <Magnetic>
-                  <a href={`mailto:${profile.email}`} className="btn-sign red press inline-flex items-center gap-2 rounded-md px-4 py-2.5 font-display text-[12px] uppercase tracking-wide">
-                    <Icon.Mail size={15} /> Email me
+                  <a href={projectEnquiryHref(profile.email)} className="btn-sign red press inline-flex items-center gap-2 rounded-md px-4 py-2.5 font-display text-[12px] uppercase tracking-wide">
+                    <Icon.Mail size={15} /> Email a brief
                   </a>
                 </Magnetic>
+              )}
+              {wa && (
+                <a href={wa} target="_blank" rel="noopener noreferrer" className="btn-paper press inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium">
+                  <Icon.Chat size={15} /> WhatsApp
+                </a>
               )}
               {profile?.email && (
                 <button onClick={() => copy(profile.email)} className="btn-paper press inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium">

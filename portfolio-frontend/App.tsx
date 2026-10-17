@@ -1,5 +1,5 @@
-import React, { Suspense, lazy, useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import React, { Suspense, lazy, useState, useEffect, useLayoutEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import { Header } from './components/Header';
 import { World } from './components/World';
 import { ContactPanel, HeroPanel, JourneyPanel, ProjectsPanel, SkillsPanel } from './components/panels';
@@ -139,6 +139,22 @@ const ContentLayout: React.FC<{ children: React.ReactNode; theme: Theme; onToggl
   );
 };
 
+/**
+ * Every page opens at the top, even when the link was in the footer. Back and forward keep the
+ * browser's own scroll position, and hash links scroll to their section instead.
+ */
+const ScrollToTop: React.FC = () => {
+  const { pathname, hash } = useLocation();
+  const navType = useNavigationType();
+  useLayoutEffect(() => {
+    if (navType === 'POP' || hash) return;
+    // "instant" rather than "auto": the page sets scroll-behavior: smooth, and a smooth scroll
+    // from the bottom of the old page to the top of the new one looks like a glitch
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [pathname, hash, navType]);
+  return null;
+};
+
 const AppContent: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>(SectionId.Hero);
   const { theme, cycleTheme } = useTheme();
@@ -146,6 +162,8 @@ const AppContent: React.FC = () => {
   useSeo();
 
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route
         path="/"
@@ -215,6 +233,7 @@ const AppContent: React.FC = () => {
         }
       />
     </Routes>
+    </>
   );
 };
 

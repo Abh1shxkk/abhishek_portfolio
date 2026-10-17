@@ -15,7 +15,7 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 
 const p = PROFILE_DATA;
 // The résumé shows the featured projects plus a few side projects with public code
-const projects = PROJECTS_DATA.filter((pr) => pr.is_featured || [16, 14, 15].includes(pr.id)).slice(0, 8);
+const projects = PROJECTS_DATA.filter((pr) => pr.is_featured || [16, 12].includes(pr.id)).slice(0, 8);
 
 const links = [
   p.email && `<a href="mailto:${p.email}">${p.email}</a>`,
