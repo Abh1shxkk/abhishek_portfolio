@@ -60,7 +60,11 @@ Project screenshots go in `public/projects/` and are referenced by `image_url`.
 
 ## Deployment
 
-Deployed on **Cloudflare Pages** with the Wrangler CLI (installed as a dev dependency). From `portfolio-frontend`:
+Live at **https://abhishekdev.online**, on **Cloudflare Pages**.
+
+**Automatic:** every push to GitHub deploys through [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): `main` goes to production, any other branch gets a preview URL. It needs a `CLOUDFLARE_API_TOKEN` secret (Cloudflare Pages: Edit) and a `CLOUDFLARE_ACCOUNT_ID` variable in the GitHub repo settings.
+
+**Manual** (Wrangler CLI, installed as a dev dependency), from `portfolio-frontend`:
 
 ```bash
 npx wrangler login          # once: opens the browser to authorise your Cloudflare account

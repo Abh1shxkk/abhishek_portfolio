@@ -1,0 +1,54 @@
+# Deploys the portfolio to Cloudflare Pages on every push.
+#   main          -> production (https://abhishekdev.online)
+#   other branches -> a preview URL like https://<branch>.abhishek-portfolio-35z.pages.dev
+#
+# Needs two settings in GitHub (Settings -> Secrets and variables -> Actions):
+#   secret   CLOUDFLARE_API_TOKEN  a Cloudflare API token with "Cloudflare Pages: Edit"
+#   variable CLOUDFLARE_ACCOUNT_ID
+# The Gemini key is NOT needed here: it lives in Cloudflare as a Pages secret.
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+  workflow_dispatch:
+
+# One deploy per branch at a time; a newer push cancels an older one still running
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: portfolio-frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: portfolio-frontend/package-lock.json
+
+      - run: npm ci
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: portfolio-frontend
+          command: pages deploy --branch=${{ github.ref_name }} --commit-hash=${{ github.sha }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
