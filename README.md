@@ -18,6 +18,17 @@ Open http://localhost:3000 (if another app already uses port 3000, run `npx vite
 Copy `portfolio-frontend/.env.example` to `portfolio-frontend/.env.local` and set `GEMINI_API_KEY` to enable the chat.
 Without a key the chat shows an "off air" message instead of failing.
 
+### How the chat keeps the key secret
+
+The browser never sees the Gemini key. The chat widget posts the conversation to
+[`api/chat.ts`](api/chat.ts), a Vercel serverless function that holds the key, calls Gemini and returns the reply.
+`npm run dev` serves the same function locally. The function also rejects other websites' origins, caps message size
+and history, and rate-limits each IP to 20 messages per 10 minutes.
+
+On Vercel, set `GEMINI_API_KEY` under **Settings → Environment Variables**. Never put it in `vite.config.ts` `define`
+or a `VITE_` variable: those are compiled into the public JavaScript. If you use a custom domain, add it to
+`ALLOWED_ORIGINS` (comma-separated hostnames).
+
 ## Useful URL parameters
 
 - `?theme=light|dark|system` – pick a theme for this visit (saved to localStorage)

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { createChatSession } from '../services/gemini';
+import { ChatSession, createChatSession } from '../services/gemini';
 import { ChatMessage } from '../types';
-import { Chat } from '@google/genai';
 import { useProfile } from '../hooks/usePortfolio';
 import { Icon } from './ui';
 
@@ -13,7 +12,7 @@ export const AIChat: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [chatSession, setChatSession] = useState<Chat | null>(null);
+  const [chatSession, setChatSession] = useState<ChatSession | null>(null);
   const [offline, setOffline] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
